@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>It's Jenna Time!</title>
+  <link rel="stylesheet" href="styles.css"/>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+</head>
+
+<body>
+
+<div class="sticky-top">
+
+<header>
+  <img src="logo.png" alt="DxP logo" class="header-logo"/>
+  <div class="logo">"It's My Time"</div>
+  <div class="tagline">-Jenna Tingum</div>
+  <div class="status-badge">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Idle</span>
+  </div>
+</header>
+
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn active" data-tab="intro"   role="tab">Intro</button>
+  <button class="tab-btn"        data-tab="demo"     role="tab">Project Demo</button>
+  <button class="tab-btn"        data-tab="metrics"  role="tab">Evaluation Metrics</button>
+  <button class="tab-btn"        data-tab="details"  role="tab">Project Details</button>
+  <button class="tab-btn"        data-tab="contact"  role="tab">Contact</button>
+</nav>
+
+</div>
+
+
+
+
+<!-- ════════════════════════════════════════════════════
+     TAB 1 — INTRO
+     ════════════════════════════════════════════════════ -->
+<div id="tab-intro" class="tab-panel active" role="tabpanel">
+  <div class="page-content">
+
+    <img src="renew.png" class="info-img" style="width: 80%; height: auto;"/>
+
+    <div class="info-section">
+      <h2>About DxP</h2>
+      <div class="info-bio">
+        About DxP text
+      </div>
+    </div>
+
+
+    <br><br>
+    <img src="keybert.png" class="info-img" style="width: 30%; height: auto;"/>
+
+    <div class="info-section">
+      <h2>About This Project</h2>
+      <div class="info-bio">
+        About this project text
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     TAB 2 — PROJECT DEMO
+     ════════════════════════════════════════════════════ -->
+<div id="tab-demo" class="tab-panel" role="tabpanel">
+  <div class="page-content">
+
+    <div class="projects-intro">
+      <h1>Project Demo</h1>
+      <p>This is where I will demo the project!</p>
+    </div>
+
+    <div class="code-block">
+      <div class="block-header">
+        <div class="block-meta">
+          <div class="block-title">
+            <span class="tag">Block 1</span></div>
+          <div class="block-desc">Block 1 Description</div>
+        </div>
+        <div class="block-actions">
+          <button class="btn btn-reset" onclick="resetEditor(this)">↺ Reset</button>
+          <button class="btn btn-clear" onclick="clearOutput(this)">✕ Clear</button>
+          <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
+        </div>
+      </div>
+      <div class="editor-wrap">
+        <textarea class="py-src">
+# Your project demo code
+# numpy, pandas, and matplotlib are pre-installed, just use 'import'
+
+import random
+
+foods = ['pizza', 'ice cream', 'ass']
+selection = random.choice(foods)
+
+print("Jenna loves eating " + selection)
+      </textarea>
+        <div class="run-hint">Ctrl+Enter to run</div>
+      </div>
+      <div class="output-area hidden">
+        <div class="output-bar"><span>Output</span><span class="timing"></span></div>
+        <div class="output-text"></div>
+        <div class="output-images"></div>
+      </div>
+    </div>
+
+    <br><br>
+
+    <h2>More about Demo</h2>
+    <p>Wow I have so many things to say about this demo!</p>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     TAB 3 — EVALUATION METRICS
+     ════════════════════════════════════════════════════ -->
+<div id="tab-metrics" class="tab-panel" role="tabpanel">
+  <div class="page-content">
+
+    <div class="projects-intro">
+      <h1>Evaluation Metrics</h1>
+      <p>Hello</p>
+    </div>
+
+    <div class="info-section">
+      <h2>Metric 1</h2>
+      <div class="info-bio">Not as good as Metric 2...</div>
+    </div>
+
+    <div class="info-section">
+      <h2>Metric 2</h2>
+      <div class="info-bio">Worse than Metric 3...</div>
+    </div>
+
+    <div class="info-section">
+      <h2>Metric 3</h2>
+      <div class="info-bio">You that read wrong</div>
+    </div>
+
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     TAB 4 — PROJECT DETAILS
+     ════════════════════════════════════════════════════ -->
+<div id="tab-details" class="tab-panel" role="tabpanel">
+  <div class="page-content">
+
+    <div class="projects-intro">
+      <h1>Project Details</h1>
+    </div>
+
+    <div class="model-intro-section">
+      <h2>Introduction</h2>
+
+      <div class="sub-section">
+        <h3>What Is This Project?</h3>
+        I have no idea, it's not my project
+      </div>
+
+      <div class="sub-section">
+        <h3>Purpose</h3>
+        I have a fiance, that means I already proposed. Oh wait, that says purpose
+      </div>
+
+      <div class="sub-section">
+        <h3>Main Example</h3>
+        Can't have an example if you don't know what the project is about
+      </div>
+
+      <div class="sub-section">
+        <h3>What Is This Page About?</h3>
+        The project details, duh
+      </div>
+
+      <div class="sub-section">
+        <h3>What Should You Take Away?</h3>
+        War, poverty, famine, corruption. There are lots of things that should be taken away
+      </div>
+
+      <div class="sub-section">
+        <h3>Comparative Analysis</h3>
+        Best DxP project I've seen
+      </div>
+
+      <div class="sub-section">
+        <h3>Keyword Candidates</h3>
+        a, the, of, and, to
+        <br>
+        words that portray useful meaning
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         MODEL SECTION 1 — KEYWORD EXTRACTION (KeyBERT)
+         ══════════════════════════════════════════════════ -->
+    <div class="model-section" id="model-keybert">
+      <div class="model-section-header">
+        <h2>Keyword Extraction (KeyBERT)</h2>
+        <p class="model-intro-blurb">QBert</p>
+      </div>
+
+      <div class="sub-section">
+        <h3>What Is Keyword Extraction?</h3>
+        Boy, howdy! You're about to find out
+        <div class="sub-section">
+          <h4>Options</h4>
+          <ul>
+            <li>Sit Down</li>
+            <li>Shut Up</li>
+            <li>Listen</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>What is KeyBERT?</h3>
+        How should I know?
+      </div>
+
+      <div class="sub-section">
+        <h3>Why KeyBERT?</h3>
+        Because BERT is the key
+      </div>
+
+      <div class="sub-section">
+        <h3>Demo Instructions</h3>
+        <div class="sub-section">
+          <h4>Main Example</h4>
+          The good one
+        </div>
+        <div class="sub-section">
+          <h4>Example That Doesn't Work</h4>
+          The bad one
+        </div>
+        <div class="sub-section">
+          <h4>What to Try</h4>
+          I'm lost
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="block-header">
+          <div class="block-meta">
+            <div class="block-title">KeyBERT Demo <span class="tag">Keyword Extraction</span></div>
+            <div class="block-desc">Description</div>
+          </div>
+          <div class="block-actions">
+            <button class="btn btn-reset" onclick="resetEditor(this)">↺ Reset</button>
+            <button class="btn btn-clear" onclick="clearOutput(this)">✕ Clear</button>
+            <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <textarea class="py-src"># ✏️ KeyBERT Demo
+# KeyBERT code + example 
+
+from keybert import project
+project.finish()
+
+print("Project: finished")
+</textarea>
+          <div class="run-hint">Ctrl+Enter to run</div>
+        </div>
+        <div class="output-area hidden">
+          <div class="output-bar"><span>Output</span><span class="timing"></span></div>
+          <div class="output-text"></div>
+          <div class="output-images"></div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>Understanding the Output</h3>
+        <div class="sub-section">
+          <h4>Main Example Output</h4>
+          123
+        </div>
+        <div class="sub-section">
+          <h4>Second Example Output</h4>
+          abc
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>Pros &amp; Cons</h3>
+        <div class="pros-cons-grid">
+          <div class="pros-box">
+            <h4>Pros</h4>
+            <ul>
+              <li>Good</li>
+              <li>Not bad</li>
+              <li>Still good</li>
+            </ul>
+          </div>
+          <div class="cons-box">
+            <h4>Cons</h4>
+            <ul>
+              <li>Not as good as could be</li>
+              <li>Ok</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         MODEL SECTION 2 — PRE-EXISTING LLM (CLAUDE)
+         ══════════════════════════════════════════════════ -->
+    <div class="model-section" id="model-claude">
+      <div class="model-section-header">
+        <h2>Pre-existing LLM (Claude)</h2>
+        <p class="model-intro-blurb">123</p>
+      </div>
+
+      <div class="sub-section">
+        <h3>What Is Generative AI?</h3>
+        Scary, but "also cool"
+        <div class="sub-section">
+          <h4>Options</h4>
+          <ul>
+            <li>A</li>
+            <li>Not A</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>What Is Claude?</h3>
+        'lil bitch, jk :wink:
+      </div>
+
+      <div class="sub-section">
+        <h3>Why Claude?</h3>
+        Because not ChatGPT
+      </div>
+
+      <div class="sub-section">
+        <h3>Demo Instructions</h3>
+        1. Collect ingredients
+        2. Make item
+        <div class="sub-section">
+          <h4>Main Example</h4>
+          Lots of examples
+        </div>
+        <div class="sub-section">
+          <h4>Example That Doesn't Work</h4>
+          Claude is a liar
+        </div>
+        <div class="sub-section">
+          <h4>What to Try</h4>
+          Kill AI
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="block-header">
+          <div class="block-meta">
+            <div class="block-title">Claude Demo <span class="tag">LLM</span></div>
+            <div class="block-desc">Descriptionss</div>
+          </div>
+          <div class="block-actions">
+            <button class="btn btn-reset" onclick="resetEditor(this)">↺ Reset</button>
+            <button class="btn btn-clear" onclick="clearOutput(this)">✕ Clear</button>
+            <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <textarea class="py-src">
+# Claude Demo
+
+import anthropic
+anthropic.kill()
+
+print("We won")</textarea>
+          <div class="run-hint">Ctrl+Enter to run</div>
+        </div>
+        <div class="output-area hidden">
+          <div class="output-bar"><span>Output</span><span class="timing"></span></div>
+          <div class="output-text"></div>
+          <div class="output-images"></div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>Pros &amp; Cons</h3>
+        <div class="pros-cons-grid">
+          <div class="pros-box">
+            <h4>Pros</h4>
+            <ul>
+              <li>Good</li>
+              <li>Not bad</li>
+              <li>Still good</li>
+            </ul>
+          </div>
+          <div class="cons-box">
+            <h4>Cons</h4>
+            <ul>
+              <li>Not as good as could be</li>
+              <li>Ok</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         MODEL SECTION 3 — SECRET THIRD OPTION
+         Unsupervised Machine Learning / NLP
+         ══════════════════════════════════════════════════ -->
+    <div class="model-section" id="model-nlp">
+      <div class="model-section-header">
+        <h2>Secret Third Option</h2>
+        <div class="model-subtitle">Unsupervised Machine Learning / NLP</div>
+        <p class="model-intro-blurb">
+          Good
+        </p>
+      </div>
+
+      <div class="sub-section">
+        <h3>Why a Happy Medium?</h3>
+        I prefer a happy large
+      </div>
+
+      <div class="sub-section">
+        <h3>Topic Modeling</h3>
+        nfsafkjasnfkjsand
+      </div>
+
+      <div class="sub-section">
+        <h3>Two-Part Architecture</h3>
+        2PA
+        <div class="sub-section">
+          <h4>Part 1: Pre-processing Model</h4>
+          Blah blah blah
+        </div>
+        <div class="sub-section">
+          <h4>Part 2: Topic Model</h4>
+          boop boop boop
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>Pre-processing Model Options</h3>
+
+        <div class="sub-section">
+          <h4>Hugging Face Transformer</h4>
+            🤗 
+        </div>
+
+        <div class="sub-section">
+          <h4>NLTK (Natural Language Toolkit)</h4>
+          No Llama Talks Korean
+        </div>
+
+        <div class="sub-section">
+          <h4>Stanza</h4>
+          Sing sing
+        </div>
+
+        <div class="sub-section">
+          <h4>spaCy</h4>
+          dumb name
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>Topic Model Options</h3>
+
+        <div class="sub-section">
+          <h4>BERTopic</h4>
+          Its ya boy, BERT
+        </div>
+
+        <div class="sub-section">
+          <h4>LDA</h4>
+          Old but good
+          <div class="sub-section">
+            <h5>Gensim</h5>
+            Sounds like a Pokemon
+          </div>
+          <div class="sub-section">
+            <h5>Scikit-learn</h5>
+            NIghtmare to install
+          </div>
+        </div>
+
+        <div class="sub-section">
+          <h4>top2vec</h4>
+          dumb name
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>What I Chose and Why</h3>
+        <div class="sub-section">
+          <h4>Pre-processing Choice</h4>
+          abc
+        </div>
+        <div class="sub-section">
+          <h4>Topic Modeling Choice</h4>
+          123
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="block-header">
+          <div class="block-meta">
+            <div class="block-title">My Model Demo <span class="tag">Topic Modeling</span></div>
+            <div class="block-desc">D-D-D-Description</div>
+          </div>
+          <div class="block-actions">
+            <button class="btn btn-reset" onclick="resetEditor(this)">↺ Reset</button>
+            <button class="btn btn-clear" onclick="clearOutput(this)">✕ Clear</button>
+            <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <textarea class="py-src"># ✏️ Topic Modeling Demo
+# Anoter Model?
+
+# jeez = 'jeez'
+
+print(jeez)
+</textarea>
+          <div class="run-hint">Ctrl+Enter to run</div>
+        </div>
+        <div class="output-area hidden">
+          <div class="output-bar"><span>Output</span><span class="timing"></span></div>
+          <div class="output-text"></div>
+          <div class="output-images"></div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3>Pros &amp; Cons</h3>
+        <div class="pros-cons-grid">
+          <div class="pros-box">
+            <h4>Pros</h4>
+            <ul>
+              <li>Good</li>
+              <li>Not bad</li>
+            </ul>
+          </div>
+          <div class="cons-box">
+            <h4>Cons</h4>
+            <ul>
+              <li>Not as good as could be</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="github-link-wrap">
+        <a class="github-link" href="<!-- your-github-url -->" target="_blank" rel="noopener">
+          🐙 GitHub
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     TAB 5 — CONTACT + ACKNOWLEDGEMENTS
+     ════════════════════════════════════════════════════ -->
+<div id="tab-contact" class="tab-panel" role="tabpanel">
+  <div class="page-content">
+
+    <div class="contact-intro">
+      <h1>Contact</h1>
+      <p>More words</p>
+    </div>
+
+    <div class="contact-grid">
+
+      <a class="contact-card" href="mailto:<!-- your@email.com -->">
+        <div class="card-icon">✉️</div>
+        <div class="card-label">Email</div>
+        <div class="card-value"><!-- your@email.com --></div>
+      </a>
+
+      <a class="contact-card" href="https://github.com/<!-- yourhandle -->" target="_blank" rel="noopener">
+        <div class="card-icon">🐙</div>
+        <div class="card-label">GitHub</div>
+        <div class="card-value"><!-- github.com/yourhandle --></div>
+      </a>
+
+      <a class="contact-card" href="https://linkedin.com/in/<!-- yourprofile -->" target="_blank" rel="noopener">
+        <div class="card-icon">💼</div>
+        <div class="card-label">LinkedIn</div>
+        <div class="card-value"><!-- linkedin.com/in/yourprofile --></div>
+      </a>
+
+    </div>
+
+    <div class="ack-section">
+      <h2>Acknowledgements</h2>
+      <div class="ack-list">
+
+        <div class="ack-item">
+          <div class="ack-icon">⭐</div>
+          <div>
+            <div class="ack-name">Aaliyah Wood</div>
+            <div class="ack-desc">1</div>
+          </div>
+        </div>
+
+        <div class="ack-item">
+          <div class="ack-icon">⭐</div>
+          <div>
+            <div class="ack-name">Kate Beeken</div>
+            <div class="ack-desc">2</div>
+          </div>
+        </div>
+
+        <div class="ack-item">
+          <div class="ack-icon">⭐</div>
+          <div>
+            <div class="ack-name">Sam LeBlanc</div>
+            <div class="ack-desc">3</div>
+          </div>
+        </div>
+
+        <div class="ack-item">
+          <div class="ack-icon">⭐</div>
+          <div>
+            <div class="ack-name">LJ Oks</div>
+            <div class="ack-desc">4</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
