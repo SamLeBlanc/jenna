@@ -14,7 +14,14 @@ from dotenv import load_dotenv
 load_dotenv("claud_key.env")
 
 app = Flask(__name__)
-CORS(app)  # allow requests from localhost:8000
+CORS(app, origins=[
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://jennatingum.com",
+    "https://jennatingum.com",
+    "http://www.jennatingum.com",
+    "https://www.jennatingum.com",
+])
 
 print("Loading KeyBERT model...")
 kw_model = KeyBERT()
