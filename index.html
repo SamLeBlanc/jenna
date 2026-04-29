@@ -106,10 +106,11 @@
 
 import random
 
-foods = ['pizza', 'ice cream', 'ass']
+name = input("What's your name? ")
+foods = ['pizza', 'ice cream', 'salad']
 selection = random.choice(foods)
 
-print("Jenna loves eating " + selection)
+print(f"Hi {name}! Jenna loves eating {selection}")
       </textarea>
         <div class="run-hint">Ctrl+Enter to run</div>
       </div>
@@ -273,13 +274,21 @@ print("Jenna loves eating " + selection)
           </div>
         </div>
         <div class="editor-wrap">
-          <textarea class="py-src"># ✏️ KeyBERT Demo
-# KeyBERT code + example 
-
-from keybert import project
-project.finish()
-
-print("Project: finished")
+          <textarea class="py-src">from keybert import KeyBERT
+kw_model = KeyBERT()
+doc = "Talked to Lou at the door. He supports our candidate for state house but it's clear his top issue is Affordability. Talked about grocery and gas prices rising plus childcare costs with a baby on the way. Gave some resources on local childcare and charities with lower-cost supplies."
+candidates = ["affordability",
+"education",
+"healthcare",
+"gun policy",
+"abortion",
+"taxes",
+"crime",
+"climate change"
+]
+# Rank only the provided candidates
+keywords = kw_model.extract_keywords(doc, candidates=candidates)
+print(keywords)
 </textarea>
           <div class="run-hint">Ctrl+Enter to run</div>
         </div>
@@ -388,13 +397,21 @@ print("Project: finished")
           </div>
         </div>
         <div class="editor-wrap">
-          <textarea class="py-src">
-# Claude Demo
-
-import anthropic
-anthropic.kill()
-
-print("We won")</textarea>
+          <textarea class="py-src">import anthropic
+from dotenv import load_dotenv
+load_dotenv("claud_key.env")
+client = anthropic.Anthropic()
+tester = input("Note example: ")
+system_info = "Using the following list of potential keyword output, output 1 keyword (2 if both are very relevant) to the input organizer notes that summarize what the main issue of the consituent is. Potential Keyword Bank: ['Economy', 'Democracy in the US', 'Terrorism', 'Immigration', 'Education', 'Healthcare', 'Gun Policy', 'Abortion', 'Taxes', 'Crime', 'Foreign Affairs', 'Energy Policy', 'Race Relations', 'LGBTQ+ rights', 'Housing']"
+message = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    system=system_info,
+    messages=[
+        {"role": "user", "content": tester}
+    ]
+)
+print(message.content[0].text)</textarea>
           <div class="run-hint">Ctrl+Enter to run</div>
         </div>
         <div class="output-area hidden">
