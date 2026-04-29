@@ -243,7 +243,7 @@ class KeyBERT:
     async def extract_keywords(self, doc, candidates=None, top_n=5, **kwargs):
         payload = json.dumps({"doc": doc, "candidates": candidates, "top_n": top_n})
         response = await pyodide.http.pyfetch(
-            "http://localhost:5050/extract",
+            "https://api.jennatingum.com/extract",
             method="POST",
             headers={"Content-Type": "application/json"},
             body=payload
@@ -276,7 +276,7 @@ class _Messages:
             "messages": messages or []
         })
         response = await pyodide.http.pyfetch(
-            "http://localhost:5050/claude",
+            "https://api.jennatingum.com/claude",
             method="POST",
             headers={"Content-Type": "application/json"},
             body=payload
