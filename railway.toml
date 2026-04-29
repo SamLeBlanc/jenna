@@ -4,3 +4,6 @@ builder = "nixpacks"
 [deploy]
 startCommand = "python server.py"
 restartPolicyType = "on_failure"
+
+[[services]]
+internalPort = 8080
