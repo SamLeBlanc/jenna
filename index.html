@@ -54,9 +54,20 @@
     <img src="renew.png" class="info-img" style="width: 80%; height: auto;"/>
 
     <div class="info-section">
-      <h2>About DxP</h2>
+      <h2>Synopsis</h2>
       <div class="info-bio">
-        About DxP text HAHHAHA
+        Through the Data x Power fellowship, this research and model was developed to solve an issue within the progressive tech space - how can we easily group conversations for follow-up without adding extra steps? Within this project’s development, a broader question arose around progressive tech more generally and the potential of AI usage within progressive spaces. This project, then, serves as a model for how organizers and technologists can develop tech together to ensure greater buy-in and longer-term use. 
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h2>DxP</h2>
+      <div class="info-bio">
+      For several years, organizations across the progressive movement have been experimenting with, frustrated by, and cementing a deeper understanding of data and technology to support their work. Although Data x Power members range in size and scope, we share common problems in tech infrastructure and implementation, as well as navigating privacy, security, and data ethics.
+      <br>
+      In 2021, Ford Foundation partnered with re:power Fund to create a space to build collective strategy and innovation through a 10-month fellowship for movement-centered data experts. Each year, a new cohort of twelve fellows are selected to work in pairs on a project that will address network-wide data and technology issues. They will undergo a series of skill-based trainings, receive a mentor, and have access to funding that enables exploration, experimentation and completion of the project. By pouring resources into individuals, we hope this fellowship serves as an incubation space for collective learning and solutions that can serve the larger movement.
+      <br>
+      Through the Data x Power fellowship, this research and model was developed to solve an issue within the progressive tech space - how can we easily group conversations for follow-up without adding extra steps? Within this project’s development, a broader question arose around progressive tech more generally and the potential of AI usage within progressive spaces. This project, then, serves as a model for how organizers and technologists can develop tech together to ensure greater buy-in and longer-term use. 
       </div>
     </div>
 
@@ -66,12 +77,18 @@
 
     <div class="info-section">
       <h2>About This Project</h2>
+      <h3>The Problem</h3>
       <div class="info-bio">
-        About this project text
+        When organizers are talking to folks in their communities, they often take notes about their interactions to document and aid in follow-up. But many tools don’t allow for easy search terms to group these folks by their key issue areas. For example, if a community member is talking to an organizer about the affordability of their prescriptions and healthcare generally during this current administration, how can we quickly tag this person as caring about “healthcare” for future follow-up when the organizer is doing Midcare sign-up outreach. 
       </div>
-    </div>
-
-  </div>
+      <h3>The Process</h3>
+      <div class="info-bio">
+        Many CRM tools already exist to house organizer notes, so the solution will not be developing a new tool. Instead, the solution here will be presenting the research and proven methods to implement this into existing tools. Knowing that this solution will require use of Artificial Intelligence and, through personal experience, that AI is a divisive topic among progressives, an additional point of research was added to understand how implementation of a tool like this would work. Ie. would organizers be too skeptical of AI to establish enough buy-in for this to work?       </div>
+      </div>
+      <h3>The Solution</h3>
+      <div class="info-bio">
+        Presented here on this site is a comparative analysis of different methods that could create tags of organizer notes and a demo of one of the methods. The tag examples of constituent issues can be found here as well as some the full list of sample notes used to test the models. Additionally, thoughts on AI implementation among progressive organizers are presented, in the form of anecdotal survey responses.      </div>
+      </div>
 </div>
 
 
@@ -175,11 +192,35 @@ print(f"Hi {name}! Jenna loves eating {selection}")
       <h2>Introduction</h2>
 
       <div class="sub-section">
-        <h3>What Is This Project?</h3>
-        I have no idea, it's not my project
+        <h3>Problem</h3>
+          Progressive organizers go out into the field day after day and have deep conversations with the community. They take diligent notes on their conversations for follow-up,  but how can we easily group these conversation notes for follow-up without adding extra steps? How can we automatically turn this qualitative data, that folks are already collecting, into categories defining the issues community members care most about? 
+          <br>
+          The answer is with an NLP model integration that takes field notes and converts them into issue tags. This answer, though, poses a larger question to the progressive community - how do we safely and effectively integrate AI tools into our ecosystem? How do we do so safely and as good stewards of community data? How can progressive tech developers involve organizers in their development process  to ensure organizer buy-in, especially when distrust of AI runs deep in the progressive community? 
+          <br>
+          Instead of developing an entirely new tool, I’ve detailed my research and thought process below so that existing field tools can implement a similar model into their systems. Each avenue I explored has its own demo to try out the model’s performance followed by some comparative analysis. 
+          <br>
+          Here is a list of all the tags chosen for this project, using this Gallup Poll’s list of most important issues influencing the 2024 election as a starting point. 
+
+          <ul>
+            <li>Economy</li>
+            <li>Democracy</li>
+            <li>Terrorism</li>
+            <li>Immigration</li>
+            <li>Education</li>
+            <li>Healthcare</li>
+            <li>Gun Policy</li>
+            <li>Abortion</li>
+            <li>Taxes</li>
+            <li>Crime</li>
+            <li>Foreign Affairs</li>
+            <li>Energy Policy</li>
+            <li>Race Relations</li>
+            <li>LGBTQ+ Rights</li>
+            <li>Housing</li>
+          </ul>
       </div>
 
-      <div class="sub-section">
+      <!-- <div class="sub-section">
         <h3>Purpose</h3>
         I have a fiance, that means I already proposed. Oh wait, that says purpose
       </div>
@@ -210,7 +251,7 @@ print(f"Hi {name}! Jenna loves eating {selection}")
         <br>
         words that portray useful meaning
       </div>
-    </div>
+    </div> -->
 
 
     <!-- ══════════════════════════════════════════════════
@@ -224,7 +265,7 @@ print(f"Hi {name}! Jenna loves eating {selection}")
 
       <div class="sub-section">
         <h3>What Is Keyword Extraction?</h3>
-        Boy, howdy! You're about to find out
+        The first and simplest approach to this problem is keyword extraction. It requires the least amount of processing power and coding effort, but isn’t very intelligent - needing the exact keyword to be present in the note text to match the list of keywords. Here are two short and relatively easy examples to demonstrate the model’s pros + cons. . 
         <div class="sub-section">
           <h4>Options</h4>
           <ul>
@@ -275,18 +316,25 @@ print(f"Hi {name}! Jenna loves eating {selection}")
         </div>
         <div class="editor-wrap">
           <textarea class="py-src">from keybert import KeyBERT
+
+
 kw_model = KeyBERT()
-doc = "Talked to Lou at the door. He supports our candidate for state house but it's clear his top issue is Affordability. Talked about grocery and gas prices rising plus childcare costs with a baby on the way. Gave some resources on local childcare and charities with lower-cost supplies."
-candidates = ["affordability",
-"education",
-"healthcare",
-"gun policy",
-"abortion",
-"taxes",
-"crime",
-"climate change"
-]
-# Rank only the provided candidates
+doc = input("Enter a sample field note: ")
+candidates = ["Economy",
+             "Democracy in the US",
+             "Terrorism",
+             "Immigration",
+             "Education",
+             "Healthcare",
+             "Gun Policy",
+             "Abortion",
+             "Taxes",
+             "Crime",
+             "Foreign Affairs",
+             "Energy Policy",
+             "Race Relations",
+             "LGBTQ+ rights",
+             "Housing"]
 keywords = kw_model.extract_keywords(doc, candidates=candidates)
 print(keywords)
 </textarea>
@@ -300,14 +348,14 @@ print(keywords)
       </div>
 
       <div class="sub-section">
-        <h3>Understanding the Output</h3>
+        <h3>Examples</h3>
         <div class="sub-section">
-          <h4>Main Example Output</h4>
-          123
+          <h4>Main Example</h4>
+        “Talked to Lou at the door. He supports our candidate for state house but it’s clear his top issue is affordability. Talked about grocery and gas prices rising plus childcare costs with a baby on the way. Gave some resources on local childcare and charities with lower-cost supplies.”
         </div>
         <div class="sub-section">
           <h4>Second Example Output</h4>
-          abc
+          It’s clear the main tag here should be “economy”, but the model turns up nothing. Now, try changing the word “affordability” to “the economy” and it quickly returns the correct value. 
         </div>
       </div>
 
@@ -317,16 +365,15 @@ print(keywords)
           <div class="pros-box">
             <h4>Pros</h4>
             <ul>
-              <li>Good</li>
-              <li>Not bad</li>
-              <li>Still good</li>
+              <li>Simple Implementation</li>
+              <li>Free</li>
             </ul>
           </div>
           <div class="cons-box">
             <h4>Cons</h4>
             <ul>
-              <li>Not as good as could be</li>
-              <li>Ok</li>
+              <li>Can’t interpret note as a whole thought, only searches for a word</li>
+              <li>Not a real option for nuanced organizer conversations</li>
             </ul>
           </div>
         </div>
