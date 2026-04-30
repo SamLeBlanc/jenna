@@ -82,13 +82,13 @@
       <div class="info-bio">
         When organizers are talking to folks in their communities, they often take notes about their interactions to document and aid in follow-up. But many tools don’t allow for easy search terms to group these folks by their key issue areas. For example, if a community member is talking to an organizer about the affordability of their prescriptions and healthcare generally during this current administration, how can we quickly tag this person as caring about “healthcare” for future follow-up when the organizer is doing Midcare sign-up outreach. 
       </div>
-      <span style="white-space: pre-line">@Model.CommentText</span>
+      <span style="white-space: pre-line"> </span>
 
       <h3>The Process</h3>
       <div class="info-bio">
         Many CRM tools already exist to house organizer notes, so the solution will not be developing a new tool. Instead, the solution here will be presenting the research and proven methods to implement this into existing tools. Knowing that this solution will require use of Artificial Intelligence and, through personal experience, that AI is a divisive topic among progressives, an additional point of research was added to understand how implementation of a tool like this would work. Ie. would organizers be too skeptical of AI to establish enough buy-in for this to work? 
       </div>
-      <span style="white-space: pre-line">@Model.CommentText</span>
+      <span style="white-space: pre-line"> </span>
 
       <h3>The Solution</h3>
       <div class="info-bio">
@@ -339,6 +339,8 @@ My colleague Aaliyah Wood conducted a survey to gather some anecdotal feedback f
 </li>
             <li>Bad for the environment, can stunt human learning, needs extensive human oversight. Unsure of its net positives on the world.
 </li>
+  <ul>
+
 <br>
 Aside from organizer buy-in, AI companies generally have different, more corporate priorities that often lead to differing ethical considerations than those of the progressive movement. For example, ChatGPT, another leading LLM, recently struck a deal with the Trump administration’s Pentagon to provide them with their data and tools. 
 Claude was chosen in this case because of its established use cases in the progressive community (for example here), its more neutral brand perception, and its refusal to adhere to these same Trump administration asks that ChatGPT did. 
@@ -350,8 +352,7 @@ Ultimately, though, corporate LLMs remain ethically ambiguous and ever-changing 
 
 Unsurprisingly, an LLM like Claude can create correct output to simple organizer notes. Try this example to test it: 
 “Has a 7 and 9 year old and thinking about moving schools because they’re worried about the quality of education at the public school. Lots of religion being pushed that makes them uncomfortable. Was asking about our candidate’s stance on school choice and resources about vouchers.” 
-<div></div>
-
+</div>
       <div class="code-block">
         <div class="block-header">
           <div class="block-meta">
@@ -422,12 +423,13 @@ print(message.content[0].text)</textarea>
       <div class="model-section-header">
         <h2>Unsupervised Machine Learning / NLP</h2>
       </div>
+        <h3>Zero Shot Classification</h2>
+
 
       <div class="code-block">
         <div class="block-header">
           <div class="block-meta">
-            <div class="block-title">My Model Demo <span class="tag">Topic Modeling</span></div>
-            <div class="block-desc">D-D-D-Description</div>
+
           </div>
           <div class="block-actions">
             <button class="btn btn-reset" onclick="resetEditor(this)">↺ Reset</button>
@@ -436,12 +438,37 @@ print(message.content[0].text)</textarea>
           </div>
         </div>
         <div class="editor-wrap">
-          <textarea class="py-src"># ✏️ Topic Modeling Demo
-# Anoter Model?
+          <textarea class="py-src"># import pandas as pd
+from transformers import pipeline
+import torch
 
-# jeez = 'jeez'
 
-print(jeez)
+classifier = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')
+
+
+candidates = ["Economy",
+             "Democracy in the US",
+             "Terrorism",
+             "Immigration",
+             "Education",
+             "Healthcare",
+             "Gun Policy",
+             "Abortion",
+             "Taxes",
+             "Crime",
+             "Foreign Affairs",
+             "Energy Policy",
+             "Race Relations",
+             "LGBTQ+ rights",
+             "Housing"]
+# Create a new column 'Predicted Category' in the df to store the predictions
+# df['Predicted Category'] = df['Review'].apply(lambda x: classifier(x, labels)['labels'][0]
+test_input = input("Enter a sample field note: ")
+pred_cat = classifier(test_input, candidates)['labels'][0]
+print(pred_cat)
+
+
+
 </textarea>
           <div class="run-hint">Ctrl+Enter to run</div>
         </div>
