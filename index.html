@@ -328,8 +328,29 @@ print(keywords)
       </div>
 
       <div class="sub-section">
-On the opposite end of this model spectrum is a fully developed LLM that’s pre-existing and pre-packaged. This is a far more intelligent approach but requires a lot more computing power, cost, and energy. It’s also likely to have a steeper buy-in process with organizers.         
+On the opposite end of this model spectrum is a fully developed LLM that’s pre-existing and pre-packaged. This is a far more intelligent approach but requires a lot more computing power, cost, and energy. It’s also likely to have a steeper buy-in process with organizers. 
+<br>
+My colleague Aaliyah Wood conducted a survey to gather some anecdotal feedback from organizers on using AI for field work. Here are some of their thoughts: 
+<br>
+<ul>
+            <li>It can definitely be useful and I do personally use it sometimes, but the litany of moral issues around it (impact on the workforce, slop, intellectual property issues, energy and environmental impacts, data privacy issues, etc.) make me feel generally pretty negative about it.
+</li>
+            <li>IFrom what I know about data centers and how harmful they are to the surrounding community, how much water they require, the data privacy issues around it etc, I don’t have the best opinion about it.
+</li>
+            <li>Bad for the environment, can stunt human learning, needs extensive human oversight. Unsure of its net positives on the world.
+</li>
+<br>
+Aside from organizer buy-in, AI companies generally have different, more corporate priorities that often lead to differing ethical considerations than those of the progressive movement. For example, ChatGPT, another leading LLM, recently struck a deal with the Trump administration’s Pentagon to provide them with their data and tools. 
+Claude was chosen in this case because of its established use cases in the progressive community (for example here), its more neutral brand perception, and its refusal to adhere to these same Trump administration asks that ChatGPT did. 
+<br>
+Ultimately, though, corporate LLMs remain ethically ambiguous and ever-changing - privacy, governance, and corporate social responsibility must be considered. 
+<br>
+<br>
+<br>
 
+Unsurprisingly, an LLM like Claude can create correct output to simple organizer notes. Try this example to test it: 
+“Has a 7 and 9 year old and thinking about moving schools because they’re worried about the quality of education at the public school. Lots of religion being pushed that makes them uncomfortable. Was asking about our candidate’s stance on school choice and resources about vouchers.” 
+<div></div>
 
       <div class="code-block">
         <div class="block-header">
@@ -348,7 +369,7 @@ On the opposite end of this model spectrum is a fully developed LLM that’s pre
 from dotenv import load_dotenv
 load_dotenv("claud_key.env")
 client = anthropic.Anthropic()
-tester = input("Note example: ")
+tester = input("Enter a sample field note: ")
 system_info = "Using the following list of potential keyword output, output 1 keyword (2 if both are very relevant) to the input organizer notes that summarize what the main issue of the consituent is. Potential Keyword Bank: ['Economy', 'Democracy in the US', 'Terrorism', 'Immigration', 'Education', 'Healthcare', 'Gun Policy', 'Abortion', 'Taxes', 'Crime', 'Foreign Affairs', 'Energy Policy', 'Race Relations', 'LGBTQ+ rights', 'Housing']"
 message = client.messages.create(
     model="claude-sonnet-4-6",
@@ -374,16 +395,18 @@ print(message.content[0].text)</textarea>
           <div class="pros-box">
             <h4>Pros</h4>
             <ul>
-              <li>Good</li>
-              <li>Not bad</li>
-              <li>Still good</li>
+              <li>Simple to implement</li>
+              <li>Stronger understanding of nuance and overall themes</li>
+              <li>Can attempt to handle spanglish or english misspellings</li>
             </ul>
           </div>
           <div class="cons-box">
             <h4>Cons</h4>
             <ul>
-              <li>Not as good as could be</li>
-              <li>Ok</li>
+              <li>Costly, especially to ensure data privacy</li>
+              <li>Unknown Environmental Impact</li>
+              <li>Steeper organizer buy-in</li>
+
             </ul>
           </div>
         </div>
@@ -393,102 +416,11 @@ print(message.content[0].text)</textarea>
 
 
     <!-- ══════════════════════════════════════════════════
-         MODEL SECTION 3 — SECRET THIRD OPTION
-         Unsupervised Machine Learning / NLP
+         MODEL SECTION 3 — Unsupervised Machine Learning / NLP
          ══════════════════════════════════════════════════ -->
     <div class="model-section" id="model-nlp">
       <div class="model-section-header">
-        <h2>Secret Third Option</h2>
-        <div class="model-subtitle">Unsupervised Machine Learning / NLP</div>
-        <p class="model-intro-blurb">
-          Good
-        </p>
-      </div>
-
-      <div class="sub-section">
-        <h3>Why a Happy Medium?</h3>
-        I prefer a happy large
-      </div>
-
-      <div class="sub-section">
-        <h3>Topic Modeling</h3>
-        nfsafkjasnfkjsand
-      </div>
-
-      <div class="sub-section">
-        <h3>Two-Part Architecture</h3>
-        2PA
-        <div class="sub-section">
-          <h4>Part 1: Pre-processing Model</h4>
-          Blah blah blah
-        </div>
-        <div class="sub-section">
-          <h4>Part 2: Topic Model</h4>
-          boop boop boop
-        </div>
-      </div>
-
-      <div class="sub-section">
-        <h3>Pre-processing Model Options</h3>
-
-        <div class="sub-section">
-          <h4>Hugging Face Transformer</h4>
-            🤗 
-        </div>
-
-        <div class="sub-section">
-          <h4>NLTK (Natural Language Toolkit)</h4>
-          No Llama Talks Korean
-        </div>
-
-        <div class="sub-section">
-          <h4>Stanza</h4>
-          Sing sing
-        </div>
-
-        <div class="sub-section">
-          <h4>spaCy</h4>
-          dumb name
-        </div>
-      </div>
-
-      <div class="sub-section">
-        <h3>Topic Model Options</h3>
-
-        <div class="sub-section">
-          <h4>BERTopic</h4>
-          Its ya boy, BERT
-        </div>
-
-        <div class="sub-section">
-          <h4>LDA</h4>
-          Old but good
-          <div class="sub-section">
-            <h5>Gensim</h5>
-            Sounds like a Pokemon
-          </div>
-          <div class="sub-section">
-            <h5>Scikit-learn</h5>
-            NIghtmare to install
-          </div>
-        </div>
-
-        <div class="sub-section">
-          <h4>top2vec</h4>
-          dumb name
-        </div>
-      </div>
-
-      <div class="sub-section">
-        <h3>What I Chose and Why</h3>
-        <div class="sub-section">
-          <h4>Pre-processing Choice</h4>
-          abc
-        </div>
-        <div class="sub-section">
-          <h4>Topic Modeling Choice</h4>
-          123
-        </div>
+        <h2>Unsupervised Machine Learning / NLP</h2>
       </div>
 
       <div class="code-block">
