@@ -35,8 +35,8 @@
 <nav class="tab-nav" role="tablist">
   <button class="tab-btn active" data-tab="intro"   role="tab">Overview</button>
   <button class="tab-btn"        data-tab="demo"     role="tab">Project Demo</button>
-  <button class="tab-btn"        data-tab="metrics"  role="tab">Evaluation Metrics</button>
   <button class="tab-btn"        data-tab="details"  role="tab">Project Details</button>
+  <button class="tab-btn"        data-tab="metrics"  role="tab">Evaluation Metrics</button>
   <button class="tab-btn"        data-tab="contact"  role="tab">Contact</button>
 </nav>
 
@@ -59,7 +59,7 @@
       </div>
     </div>
    
-    <img src="logo.png" class="info-img" style="width: 80%; height: auto;"/>
+    <img src="logo.png" class="info-img" style="width: 50%; height: auto;"/>
 
     <div class="info-section">
       <h2>DxP</h2>
@@ -74,7 +74,7 @@
 
 
     <br><br>
-    <img src="TingTag_no_bg.png" class="info-img" style="width: 80%; height: auto;"/>
+    <img src="TingTag_no_bg.png" class="info-img" style="width: 50%; height: auto;"/>
 
     <div class="info-section">
       <h2>About This Project</h2>
@@ -146,8 +146,6 @@ print(f"Hi {name}! Jenna loves eating {selection}")
 
     <br><br>
 
-    <h2>More about Demo</h2>
-    <p>Wow I have so many things to say about this demo!</p>
 
   </div>
 </div>
@@ -161,23 +159,24 @@ print(f"Hi {name}! Jenna loves eating {selection}")
 
     <div class="projects-intro">
       <h1>Evaluation Metrics</h1>
-      <p>Hello</p>
+      <p>Further details about how to determine which model will work best.</p>
     </div>
 
     <div class="info-section">
-      <h2>Metric 1</h2>
-      <div class="info-bio">Not as good as Metric 2...</div>
+      <h2>Model Considerations</h2>
+      <div class="info-bio">supervised vs. unsupervised training</div>
+    </div>
+   
+    <div class="info-section">
+      <h2>AI Reception</h2>
+      <div class="info-bio">Plug for Aaliyah's project, organizer sentiment, data security + privacy, governance</div>
     </div>
 
     <div class="info-section">
-      <h2>Metric 2</h2>
-      <div class="info-bio">Worse than Metric 3...</div>
+      <h2>Cost and Maintenance</h2>
+      <div class="info-bio">Cost and Longevity</div>
     </div>
 
-    <div class="info-section">
-      <h2>Metric 3</h2>
-      <div class="info-bio">You that read wrong</div>
-    </div>
 
 
   </div>
@@ -200,11 +199,11 @@ print(f"Hi {name}! Jenna loves eating {selection}")
       <div class="sub-section">
         <h3>Problem</h3>
           Progressive organizers go out into the field day after day and have deep conversations with the community. They take diligent notes on their conversations for follow-up,  but how can we easily group these conversation notes for follow-up without adding extra steps? How can we automatically turn this qualitative data, that folks are already collecting, into categories defining the issues community members care most about? 
-          <br>
+          <br> <br>
           The answer is with an NLP model integration that takes field notes and converts them into issue tags. This answer, though, poses a larger question to the progressive community - how do we safely and effectively integrate AI tools into our ecosystem? How do we do so safely and as good stewards of community data? How can progressive tech developers involve organizers in their development process  to ensure organizer buy-in, especially when distrust of AI runs deep in the progressive community? 
-          <br>
+          <br> <br>
           Instead of developing an entirely new tool, I’ve detailed my research and thought process below so that existing field tools can implement a similar model into their systems. Each avenue I explored has its own demo to try out the model’s performance followed by some comparative analysis. 
-          <br>
+          <br> <br>
           Here is a list of all the tags chosen for this project, using this Gallup Poll’s list of most important issues influencing the 2024 election as a starting point. 
 
           <ul>
@@ -226,38 +225,7 @@ print(f"Hi {name}! Jenna loves eating {selection}")
           </ul>
       </div>
 
-      <!-- <div class="sub-section">
-        <h3>Purpose</h3>
-        I have a fiance, that means I already proposed. Oh wait, that says purpose
-      </div>
-
-      <div class="sub-section">
-        <h3>Main Example</h3>
-        Can't have an example if you don't know what the project is about
-      </div>
-
-      <div class="sub-section">
-        <h3>What Is This Page About?</h3>
-        The project details, duh
-      </div>
-
-      <div class="sub-section">
-        <h3>What Should You Take Away?</h3>
-        War, poverty, famine, corruption. There are lots of things that should be taken away
-      </div>
-
-      <div class="sub-section">
-        <h3>Comparative Analysis</h3>
-        Best DxP project I've seen
-      </div>
-
-      <div class="sub-section">
-        <h3>Keyword Candidates</h3>
-        a, the, of, and, to
-        <br>
-        words that portray useful meaning
-      </div>
-    </div> -->
+    </div> 
 
 
     <!-- ══════════════════════════════════════════════════
@@ -271,14 +239,7 @@ print(f"Hi {name}! Jenna loves eating {selection}")
       <div class="sub-section">
         <h3>What Is Keyword Extraction?</h3>
         The first and simplest approach to this problem is keyword extraction. It requires the least amount of processing power and coding effort, but isn’t very intelligent - needing the exact keyword to be present in the note text to match the list of keywords. Here are two short and relatively easy examples to demonstrate the model’s pros + cons. . 
-        <div class="sub-section">
-          <h4>Options</h4>
-          <ul>
-            <li>Sit Down</li>
-            <li>Shut Up</li>
-            <li>Listen</li>
-          </ul>
-        </div>
+        
       </div>
 
       <div class="code-block">
@@ -329,11 +290,8 @@ print(keywords)
       <div class="sub-section">
         <h3>Examples</h3>
         <div class="sub-section">
-          <h4>Main Example</h4>
         “Talked to Lou at the door. He supports our candidate for state house but it’s clear his top issue is affordability. Talked about grocery and gas prices rising plus childcare costs with a baby on the way. Gave some resources on local childcare and charities with lower-cost supplies.”
-        </div>
-        <div class="sub-section">
-          <h4>Second Example Output</h4>
+        <br>
           It’s clear the main tag here should be “economy”, but the model turns up nothing. Now, try changing the word “affordability” to “the economy” and it quickly returns the correct value. 
         </div>
       </div>
@@ -367,48 +325,11 @@ print(keywords)
     <div class="model-section" id="model-claude">
       <div class="model-section-header">
         <h2>Pre-existing LLM (Claude)</h2>
-        <p class="model-intro-blurb">123</p>
       </div>
 
       <div class="sub-section">
-        <h3>What Is Generative AI?</h3>
-        Scary, but "also cool"
-        <div class="sub-section">
-          <h4>Options</h4>
-          <ul>
-            <li>A</li>
-            <li>Not A</li>
-          </ul>
-        </div>
-      </div>
+On the opposite end of this model spectrum is a fully developed LLM that’s pre-existing and pre-packaged. This is a far more intelligent approach but requires a lot more computing power, cost, and energy. It’s also likely to have a steeper buy-in process with organizers.         
 
-      <div class="sub-section">
-        <h3>What Is Claude?</h3>
-        'lil bitch, jk :wink:
-      </div>
-
-      <div class="sub-section">
-        <h3>Why Claude?</h3>
-        Because not ChatGPT
-      </div>
-
-      <div class="sub-section">
-        <h3>Demo Instructions</h3>
-        1. Collect ingredients
-        2. Make item
-        <div class="sub-section">
-          <h4>Main Example</h4>
-          Lots of examples
-        </div>
-        <div class="sub-section">
-          <h4>Example That Doesn't Work</h4>
-          Claude is a liar
-        </div>
-        <div class="sub-section">
-          <h4>What to Try</h4>
-          Kill AI
-        </div>
-      </div>
 
       <div class="code-block">
         <div class="block-header">
