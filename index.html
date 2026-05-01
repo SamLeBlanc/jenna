@@ -14,8 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 
-  <!-- Pyodide -->
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+
 </head>
 
 <body>
@@ -136,6 +135,10 @@
           <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
         </div>
       </div>
+      <div class="field-note-wrap">
+        <label class="field-note-label">Field Note</label>
+        <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
+      </div>
       <div class="editor-wrap">
         <textarea class="py-src">
 
@@ -153,10 +156,10 @@ Zero-Shot Classification
 Sentence Transformers 
 """
 
-import os
-import sys
-import warnings
-import logging
+# import os
+# import sys
+# import warnings
+# import logging
 
 # Suppress warnings from all libraries before any imports
 warnings.filterwarnings("ignore")
@@ -191,8 +194,8 @@ CANDIDATES = [
 
 def run_keybert(doc: str) -> str:
     try:
-        from keybert import KeyBERT
-        kw_model = KeyBERT()
+        # from keybert import KeyBERT
+        # kw_model = KeyBERT()
         keywords = kw_model.extract_keywords(doc, candidates=CANDIDATES)
         # Returns list of (keyword, score) tuples — grab the top result
         if keywords:
@@ -207,11 +210,8 @@ def run_keybert(doc: str) -> str:
 
 def run_claude(doc: str) -> str:
     try:
-        import anthropic
-        from dotenv import load_dotenv
-        load_dotenv("claud_key.env")
-
-        client = anthropic.Anthropic()
+        # import anthropic
+        client = claude_client
         system_info = (
             "Using the following list of potential keyword output, output 1 keyword "
             "(2 if both are very relevant) to the input organizer notes that summarize "
@@ -391,84 +391,9 @@ SECOND_ISSUE_MIN_RATIO = 0.65
 
 def run_spacy(note_text: str) -> str:
     try:
-        import numpy as np
-        import spacy
-        from spacy.matcher import Matcher, PhraseMatcher
-
-        nlp = spacy.load("en_core_web_lg")
-
-        phrase_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-        for issue, terms in SPACY_KEYWORDS.items():
-            patterns = [nlp.make_doc(term) for term in terms]
-            phrase_matcher.add(issue, patterns)
-
-        token_matcher = Matcher(nlp.vocab)
-        for issue, terms in SPACY_KEYWORDS.items():
-            single_word_terms = [t for t in terms if len(t.split()) == 1]
-            if not single_word_terms:
-                continue
-            lemma_patterns, pos_patterns, lower_patterns = [], [], []
-            for term in single_word_terms:
-                term_doc = nlp(term)
-                if not term_doc:
-                    continue
-                token = term_doc[0]
-                lemma_patterns.append([{"LEMMA": token.lemma_}])
-                if token.pos_ in ("NOUN", "VERB", "PROPN", "ADJ"):
-                    pos_patterns.append([{"LEMMA": token.lemma_, "POS": token.pos_}])
-                lower_patterns.append([{"LOWER": term.lower()}])
-            if lemma_patterns:
-                token_matcher.add(f"LEMMA_{issue}", lemma_patterns)
-            if pos_patterns:
-                token_matcher.add(f"POS_{issue}", pos_patterns)
-            if lower_patterns:
-                token_matcher.add(f"LOWER_{issue}", lower_patterns)
-
-        issue_vectors = {}
-        for issue, terms in SPACY_KEYWORDS.items():
-            vecs = [nlp(term).vector for term in terms if nlp(term).has_vector]
-            if vecs:
-                issue_vectors[issue] = np.mean(vecs, axis=0)
-
-        def cosine_similarity(doc, issue_vec):
-            if not doc.has_vector:
-                return 0.0
-            denom = np.linalg.norm(doc.vector) * np.linalg.norm(issue_vec)
-            return float(np.dot(doc.vector, issue_vec) / denom) if denom else 0.0
-
-        doc = nlp(note_text)
-        hit_counts = {}
-
-        for match_id, _s, _e in phrase_matcher(doc):
-            label = nlp.vocab.strings[match_id]
-            hit_counts[label] = hit_counts.get(label, 0) + 1
-
-        for match_id, _s, _e in token_matcher(doc):
-            raw_key = nlp.vocab.strings[match_id]
-            for prefix in ("LEMMA_", "POS_", "LOWER_"):
-                if raw_key.startswith(prefix):
-                    label = raw_key[len(prefix):]
-                    hit_counts[label] = hit_counts.get(label, 0) + 1
-                    break
-
-        if not hit_counts:
-            scores = {issue: cosine_similarity(doc, vec) for issue, vec in issue_vectors.items()}
-            for issue, score in scores.items():
-                if score >= VECTOR_THRESHOLD:
-                    hit_counts[issue] = round(score * 2)
-
-        if not hit_counts:
-            return "Unclassified"
-
-        ranked = sorted(hit_counts.items(), key=lambda x: x[1], reverse=True)
-        top_issue, top_count = ranked[0]
-        result = [top_issue]
-        if len(ranked) > 1:
-            second_issue, second_count = ranked[1]
-            if second_count >= top_count * SECOND_ISSUE_MIN_RATIO:
-                result.append(second_issue)
-
-        return ", ".join(result)
+        # import spacy
+        # nlp = spacy.load("en_core_web_lg")
+        return nlp.classify(note_text)
     except Exception as e:
         return f"Error: {e}"
 
@@ -477,7 +402,7 @@ def run_spacy(note_text: str) -> str:
 
 def run_zero_shot(doc: str) -> str:
     try:
-        from transformers import pipeline
+        # from transformers import pipeline
         classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
         result = classifier(doc, CANDIDATES)
         return result["labels"][0]
@@ -499,8 +424,9 @@ SECOND_KEYWORD_THRESHOLD = 0.40
 
 def run_sentence_transformer(doc: str) -> str:
     try:
-        from sentence_transformers import SentenceTransformer, util
-        model = SentenceTransformer("all-MiniLM-L6-v2")
+        # from sentence_transformers import SentenceTransformer, util
+        # model = SentenceTransformer("all-MiniLM-L6-v2")
+        model = sentence_model
         keyword_embeddings = model.encode(SENTENCE_TRANSFORMER_CANDIDATES, convert_to_tensor=True)
         note_embedding = model.encode(doc, convert_to_tensor=True)
         scores = util.cos_sim(note_embedding, keyword_embeddings)[0]
@@ -516,12 +442,10 @@ def run_sentence_transformer(doc: str) -> str:
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
-    note = input("Enter a field note: ").strip()
-    if not note:
-        print("No input provided. Exiting.")
-        sys.exit(1)
-
+note = input("Enter a field note: ").strip()
+if not note:
+    print("No input provided.")
+else:
     print("\nRunning all classifiers...\n")
     print("-" * 50)
 
@@ -668,11 +592,14 @@ if __name__ == "__main__":
             <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
           </div>
         </div>
+        <div class="field-note-wrap">
+          <label class="field-note-label">Field Note</label>
+          <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
+        </div>
         <div class="editor-wrap">
-          <textarea class="py-src">from keybert import KeyBERT
+          <textarea class="py-src"># from keybert import KeyBERT
+# kw_model = KeyBERT()
 
-
-kw_model = KeyBERT()
 doc = input("Enter a sample field note: ")
 candidates = ["Economy",
              "Democracy in the US",
@@ -780,11 +707,14 @@ Unsurprisingly, an LLM like Claude can create correct output to simple organizer
             <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
           </div>
         </div>
+        <div class="field-note-wrap">
+          <label class="field-note-label">Field Note</label>
+          <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
+        </div>
         <div class="editor-wrap">
-          <textarea class="py-src">import anthropic
-from dotenv import load_dotenv
-load_dotenv("claud_key.env")
-client = anthropic.Anthropic()
+          <textarea class="py-src"># import anthropic
+# client = anthropic.Anthropic()
+client = claude_client
 tester = input("Enter a sample field note: ")
 system_info = "Using the following list of potential keyword output, output 1 keyword (2 if both are very relevant) to the input organizer notes that summarize what the main issue of the consituent is. Potential Keyword Bank: ['Economy', 'Democracy in the US', 'Terrorism', 'Immigration', 'Education', 'Healthcare', 'Gun Policy', 'Abortion', 'Taxes', 'Crime', 'Foreign Affairs', 'Energy Policy', 'Race Relations', 'LGBTQ+ rights', 'Housing']"
 message = client.messages.create(
@@ -828,8 +758,7 @@ print(message.content[0].text)</textarea>
         </div>
       </div>
 
-    </div>
-
+    
 
     <!-- ══════════════════════════════════════════════════
          MODEL SECTION 3 — Unsupervised Machine Learning / NLP
@@ -853,10 +782,14 @@ print(message.content[0].text)</textarea>
             <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
           </div>
         </div>
+        <div class="field-note-wrap">
+          <label class="field-note-label">Field Note</label>
+          <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
+        </div>
         <div class="editor-wrap">
-          <textarea class="py-src">import numpy as np
-import spacy
-from spacy.matcher import Matcher, PhraseMatcher
+          <textarea class="py-src"># import numpy as np
+# import spacy
+# from spacy.matcher import Matcher, PhraseMatcher
 
 
 # ── Config ────────────────────────────────────────────────────────────────────
@@ -1178,14 +1111,12 @@ def classify_note(note_text: str) -> list[str]:
 
 
 
-# ── Entry point ───────────────────────────────────────────────────────────────
+# ── Run ───────────────────────────────────────────────────────────────────────
 
-
-if __name__ == "__main__":
-   note = input("Note: ").strip()
-   if note:
-       result = classify_note(note)
-       print(", ".join(result))
+note = input("Note: ").strip()
+if note:
+    result = classify_note(note)
+    print(", ".join(result))
 
 
 
@@ -1233,10 +1164,14 @@ if __name__ == "__main__":
             <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
           </div>
         </div>
+        <div class="field-note-wrap">
+          <label class="field-note-label">Field Note</label>
+          <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
+        </div>
         <div class="editor-wrap">
           <textarea class="py-src"># import pandas as pd
-from transformers import pipeline
-import torch
+# from transformers import pipeline
+# import torch
 
 
 classifier = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')
@@ -1310,11 +1245,14 @@ print(pred_cat)
             <button class="btn btn-run"   onclick="runBlock(this)">▶ Run</button>
           </div>
         </div>
+        <div class="field-note-wrap">
+          <label class="field-note-label">Field Note</label>
+          <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
+        </div>
         <div class="editor-wrap">
           <textarea class="py-src"># from sentence_transformers import SentenceTransformer, util
-
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
+# model = SentenceTransformer("all-MiniLM-L6-v2")
+model = sentence_model
 
 
 KEYWORD_BANK = [
@@ -1393,6 +1331,15 @@ print(f"Keywords: {keywords}")
       </div>
 
     </div>
+
+  </div>
+
+    
+    </div>
+
+    
+
+
 
   </div>
 </div>

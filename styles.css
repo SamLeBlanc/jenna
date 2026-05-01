@@ -298,19 +298,61 @@ header {
 .btn-clear:hover { color: var(--text); border-color: var(--muted); }
 .btn-reset:hover { color: var(--yellow); border-color: var(--yellow); }
 
+/* ── Field note input ────────────────────────────────── */
+.field-note-wrap {
+  padding: 0.6rem 1rem 0;
+}
+
+.field-note-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent2);
+  margin-bottom: 0.35rem;
+}
+
+.field-note-input {
+  width: 100%;
+  min-height: 60px;
+  max-height: 140px;
+  resize: vertical;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field-note-input:focus {
+  border-color: var(--accent);
+}
+
+.field-note-input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
 /* ── CodeMirror overrides ────────────────────────────── */
 .editor-wrap { position: relative; }
 
 .CodeMirror {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
   font-size: 13px !important;
-  height: 220px !important;
+  height: auto !important;
+  max-height: 1000px !important;
   background: #282a36 !important;
   padding: 0.4rem 0;
 }
 .CodeMirror-scroll {
-  min-height: 220px;
-  overflow-y: scroll !important;
+  max-height: 1000px;
+  overflow-y: auto !important;
 }
 
 .run-hint {
