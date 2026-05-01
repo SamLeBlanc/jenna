@@ -2,7 +2,7 @@
    app.js  —  DxP Project Site
    ═══════════════════════════════════════════════════ */
 
-const SERVER = 'http://localhost:8080';
+const SERVER = 'https://api.jennatingum.com';
 
 const editors   = [];   // CodeMirror instances
 const originals = [];   // original source text per block
