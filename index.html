@@ -392,8 +392,71 @@ SECOND_ISSUE_MIN_RATIO = 0.65
 def run_spacy(note_text: str) -> str:
     try:
         # import spacy
+        # from spacy.matcher import Matcher, PhraseMatcher
         # nlp = spacy.load("en_core_web_lg")
-        return nlp.classify(note_text)
+
+        phrase_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
+        token_matcher  = Matcher(nlp.vocab)
+        issue_vectors  = {}
+
+        for issue, terms in SPACY_KEYWORDS.items():
+            phrase_matcher.add(issue, [nlp.make_doc(t) for t in terms])
+            single = [t for t in terms if len(t.split()) == 1]
+            lemma_pats, pos_pats, lower_pats = [], [], []
+            for t in single:
+                td = nlp(t)
+                if not td: continue
+                tok = td[0]
+                lemma_pats.append([{"LEMMA": tok.lemma_}])
+                if tok.pos_ in ("NOUN", "VERB", "PROPN", "ADJ"):
+                    pos_pats.append([{"LEMMA": tok.lemma_, "POS": tok.pos_}])
+                lower_pats.append([{"LOWER": t.lower()}])
+            if lemma_pats: token_matcher.add(f"LEMMA_{issue}", lemma_pats)
+            if pos_pats:   token_matcher.add(f"POS_{issue}",   pos_pats)
+            if lower_pats: token_matcher.add(f"LOWER_{issue}", lower_pats)
+            vecs = [nlp(t).vector for t in terms if nlp(t).has_vector]
+            if vecs:
+                import numpy as np
+                issue_vectors[issue] = np.mean(vecs, axis=0)
+
+        def cosine_sim(doc, vec):
+            if not doc.has_vector: return 0.0
+            import numpy as np
+            denom = np.linalg.norm(doc.vector) * np.linalg.norm(vec)
+            return float(np.dot(doc.vector, vec) / denom) if denom else 0.0
+
+        doc        = nlp(note_text)
+        hit_counts = {}
+
+        for match_id, _s, _e in phrase_matcher(doc):
+            label = nlp.vocab.strings[match_id]
+            hit_counts[label] = hit_counts.get(label, 0) + 1
+
+        for match_id, _s, _e in token_matcher(doc):
+            raw = nlp.vocab.strings[match_id]
+            for prefix in ("LEMMA_", "POS_", "LOWER_"):
+                if raw.startswith(prefix):
+                    label = raw[len(prefix):]
+                    hit_counts[label] = hit_counts.get(label, 0) + 1
+                    break
+
+        if not hit_counts:
+            for issue, vec in issue_vectors.items():
+                score = cosine_sim(doc, vec)
+                if score >= VECTOR_THRESHOLD:
+                    hit_counts[issue] = round(score * 2)
+
+        if not hit_counts:
+            return "Unclassified"
+
+        ranked = sorted(hit_counts.items(), key=lambda x: x[1], reverse=True)
+        top_issue, top_count = ranked[0]
+        result = [top_issue]
+        if len(ranked) > 1:
+            second_issue, second_count = ranked[1]
+            if second_count >= top_count * SECOND_ISSUE_MIN_RATIO:
+                result.append(second_issue)
+        return ", ".join(result)
     except Exception as e:
         return f"Error: {e}"
 
