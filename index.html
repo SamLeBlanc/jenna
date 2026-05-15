@@ -476,14 +476,22 @@ def run_zero_shot(doc: str) -> str:
 
 # ── Model 5: Sentence Transformers ───────────────────────────────────────────
 
-SENTENCE_TRANSFORMER_CANDIDATES = [
-    "The Economy", "Democracy in the US", "Terrorism and National Security",
-    "Government Leadership and Nominations", "Immigration", "Education",
-    "Healthcare", "Gun Policy", "Abortion", "Taxes", "Crime",
-    "Distribution of income and wealth in the U.S.", "Federal Budget Deficit",
-    "Foreign Affairs", "Energy Policy", "Race Relations", "Trade with other nations",
-    "Climate Change", "LGBTQ+ rights", "Housing",
-]
+SENTENCE_TRANSFORMER_CANDIDATES = ["Economy",
+             "Democracy in the US",
+             "Terrorism",
+             "Immigration",
+             "Education",
+             "Healthcare",
+             "Gun Policy",
+             "Abortion",
+             "Taxes",
+             "Crime",
+             "Foreign Affairs",
+             "Energy Policy",
+             "Race Relations",
+             "LGBTQ+ rights",
+             "Housing"]
+
 SECOND_KEYWORD_THRESHOLD = 0.40
 
 def run_sentence_transformer(doc: str) -> str:
@@ -561,7 +569,6 @@ else:
 
     <div class="projects-intro">
       <h1>Evaluation Metrics</h1>
-      <p>Ease of Implementation</p>
 
 </ul>
     </div>
@@ -570,7 +577,7 @@ else:
       <h2>Ease of Implementation</h2>
       <div class="info-bio">This model must be easy to implement and edit as needs and issues change.
 </div>
-         <ul>
+    <ul style="padding-left:20px">
         <li>Set-Up</li>  
         <li>Cost</li>
         <li>Run time</li>
@@ -581,7 +588,7 @@ else:
     <div class="info-section">
       <h2>Adaptability</h2>
       <div class="info-bio"> Organizer’s field notes can vary wildly - this tool needs to be able to account for variety.</div>
-         <ul>
+    <ul style="padding-left:20px">
         <li>Typos</li>  
         <li>Abbreviations</li>
         <li>Slang</li>
@@ -1344,14 +1351,21 @@ print(pred_cat)
 model = sentence_model
 
 
-KEYWORD_BANK = [
-   "The Economy", "Democracy in the US", "Terrorism and National Security",
-   "Government Leadership and Nominations", "Immigration", "Education",
-   "Healthcare", "Gun Policy", "Abortion", "Taxes", "Crime",
-   "Distribution of income and wealth in the U.S.", "Federal Budget Deficit",
-   "Foreign Affairs", "Energy Policy", "Race Relations", "Trade with other nations",
-   "Climate Change", "LGBTQ+ rights", "Housing",
-]
+KEYWORD_BANK = ["Economy",
+             "Democracy in the US",
+             "Terrorism",
+             "Immigration",
+             "Education",
+             "Healthcare",
+             "Gun Policy",
+             "Abortion",
+             "Taxes",
+             "Crime",
+             "Foreign Affairs",
+             "Energy Policy",
+             "Race Relations",
+             "LGBTQ+ rights",
+             "Housing"]
 
 
 keyword_embeddings = model.encode(KEYWORD_BANK, convert_to_tensor=True)
@@ -1442,7 +1456,7 @@ print(f"Keywords: {keywords}")
 
     <div class="contact-intro">
       <h1>Contact</h1>
-      <p>More words</p>
+      <p></p>
     </div>
 
     <div class="contact-grid">
