@@ -626,18 +626,19 @@ else:
     <div class="projects-intro">
       <h1>Project Details</h1>
     </div>
-    <br><br>
     <div class="model-intro-section">
 
       <div class="sub-section">
         
       Instead of developing an entirely new tool, research is compiled below so that existing field tools can implement a similar model into their systems. Each avenue explored has its own demo to try out the model’s performance followed by some comparative analysis.
-   
+        <br> 
       <div class="projects-intro">
       <h2>Logistics</h2>
             <div class="sub-section">
         Implementing Topic Modeling using Natural Language Processing will ideally look something like: 
-        <ol>
+        
+        <ol style="padding-left:20px">
+
             <li>Start with a list of pre-determined candidates for tags, like "Economy", "Healthcare", or "Immigration". </li>
             <li>Model runs in the background and assigns issue tags to the note based on the content.</li>
             <li>Tags, one or two if relevant, are assigned to summarize the consituent's current concerns. </li>
@@ -780,11 +781,11 @@ On the opposite end of this model spectrum is a fully developed LLM that’s pre
 My colleague Aaliyah Wood conducted a survey to gather some anecdotal feedback from organizers on using AI for field work. Here are some of their thoughts: 
 <br>
 <ul>
-            <li>It can definitely be useful and I do personally use it sometimes, but the litany of moral issues around it (impact on the workforce, slop, intellectual property issues, energy and environmental impacts, data privacy issues, etc.) make me feel generally pretty negative about it.
+            <li>"It can definitely be useful and I do personally use it sometimes, but the litany of moral issues around it (impact on the workforce, slop, intellectual property issues, energy and environmental impacts, data privacy issues, etc.) make me feel generally pretty negative about it.
 </li>
-            <li>From what I know about data centers and how harmful they are to the surrounding community, how much water they require, the data privacy issues around it etc, I don’t have the best opinion about it.
+            <li>"From what I know about data centers and how harmful they are to the surrounding community, how much water they require, the data privacy issues around it etc, I don’t have the best opinion about it.""
 </li>
-            <li>Bad for the environment, can stunt human learning, needs extensive human oversight. Unsure of its net positives on the world.
+            <li>"Bad for the environment, can stunt human learning, needs extensive human oversight. Unsure of its net positives on the world."
 </li>
 </ul>
   </div>
@@ -796,7 +797,7 @@ Claude was chosen in this case because of its established use cases in the progr
 Ultimately, though, corporate LLMs remain ethically ambiguous and ever-changing - privacy, governance, and corporate social responsibility must be considered. 
 <br>
 <br>
-<br>
+
 
 Unsurprisingly, an LLM like Claude can create correct output to simple organizer notes. Try this example to test it: 
 “Has a 7 and 9 year old and thinking about moving schools because they’re worried about the quality of education at the public school. Lots of religion being pushed that makes them uncomfortable. Was asking about our candidate’s stance on school choice and resources about vouchers.” 
@@ -871,12 +872,20 @@ print(message.content[0].text)</textarea>
          ══════════════════════════════════════════════════ -->
     <div class="model-section" id="model-nlp">
       <div class="model-section-header">
-        <h2>Unsupervised Machine Learning / NLP</h2>
+        <h2>TingTag: Unsupervised Machine Learning / NLP Options</h2>
+        It’s clear, then, that a happy medium is needed that incorporates the simplicity of keyword extraction and the intelligence of an LLM. We’ll explore three options below - SpaCy, Zero-Shot Classification, and Sentence Transformers. 
+
       </div>
 
         <h3>Spacy</h2>
-
-
+        SpaCy is an NLP model developed by MIT that acts most similarly to keyword extraction of our three options. This model uses three different methods to understand the input and produce one or two keyword tags - 
+            <br>
+        3  Layers - each attempt to match lists corresponding to each keyword
+        <ol style="padding-left:20px">
+    <li>Phrase Matcher - looks for exact matches of the keywords or phrases in the note</li>
+    <li>Token + "Fuzzy" Matcher - looks for matches of the individual words in the keywords, allowing for some flexibility with typos and word forms (e.g., "affordable" vs. "affordability")</li>
+    <li>Vector Similarity - looks at the overall meaning of the note and compares it to the meaning of the keywords using word vectors, allowing for more nuanced matches
+        <br>
       <div class="code-block">
         <div class="block-header">
           <div class="block-meta">
@@ -1240,24 +1249,34 @@ if note:
         <h3>Pros & Cons</h3>
         <div class="pros-cons-grid">
           <div class="pros-box">
-            <h4>Pros</h4>
+             <h4>Pros</h4>
             <ul>
-              <li>Good</li>
-              <li>Not bad</li>
+              <li>Speedy</li>
+              <li>Most transparent/explainable</li>
+              <li>Handles typos well</li>
             </ul>
           </div>
           <div class="cons-box">
             <h4>Cons</h4>
             <ul>
-              <li>Not as good as could be</li>
+              <li>These “trigger” lists need to be maintained</li>
+               <li>Doesn’t handle implied topics or context-dependent topics as well</li>
             </ul>
+
+            <br>
           </div>
         </div>
       </div>
 
       
         <h3>Zero Shot Classification</h2>
-
+        Zero-Shot Classification is a type of NLP model that can classify text into categories it hasn’t seen before. It uses Natural Language Inference (NLI) to determine logical implication of a note related to the keyword candidate list. 
+        It asks the question: 
+        <br>
+        “Does this note have to do with [keyword tag] ?”
+        <br>
+        Then it scores each result and outputs the highest score(s).
+        <br><br>
 
       <div class="code-block">
         <div class="block-header">
@@ -1322,15 +1341,18 @@ print(pred_cat)
           <div class="pros-box">
             <h4>Pros</h4>
             <ul>
-              <li>Good</li>
-              <li>Not bad</li>
+              <li>Understands implied topics</li>
+              <li>Simple set-up</li>
             </ul>
           </div>
           <div class="cons-box">
             <h4>Cons</h4>
             <ul>
-              <li>Not as good as could be</li>
+              <li>Bulky model options</li>
+               <li>Slower run time</li>
+               <li>Doesn’t handle typos well</li>
             </ul>
+            
           </div>
         </div>
       </div>
@@ -1338,7 +1360,8 @@ print(pred_cat)
 
       
         <h3>Sentence Transformers</h2>
-
+Sentence Transformers is a type of NLP model that tests similarity of the field note and each of the keyword candidates. Turning the notes into vector embeddings, it measures the cosine similarity of the note vector and each keyword vector, outputting the keyword(s) with the highest similarity score(s).
+<br><br>
 
       <div class="code-block">
         <div class="block-header">
@@ -1423,14 +1446,15 @@ print(f"Keywords: {keywords}")
           <div class="pros-box">
             <h4>Pros</h4>
             <ul>
-              <li>Good</li>
-              <li>Not bad</li>
+              <li>Understands implied topics</li>
+              <li>Small Model size</li>
+              <li>Can handle multilingual notes with a different model input</li>
             </ul>
           </div>
           <div class="cons-box">
             <h4>Cons</h4>
             <ul>
-              <li>Not as good as could be</li>
+              <li>Doesn’t handle typos well </li>
             </ul>
           </div>
         </div>
@@ -1447,8 +1471,20 @@ print(f"Keywords: {keywords}")
 
   </div>
 
-    
+
+     <div class="projects-intro">
+      <h2>Recommendations</h2>
     </div>
+        Developers looking to implement a model like this should consider layering these approaches to find a happy medium of accuracy, cost, and simplicity. 
+        For example, using SpaCy as a first layer to catch the low-hanging fruit and then passing unclassified notes to the Sentence Transformer model for further analysis could be a good way to maximize accuracy while minimizing cost and complexity.
+        <br>
+        Other important takeways from this project development:
+        <ul style="padding-left:20px">
+<li>NLP Models - for task simplification + organizing ease </li>
+<li>AI Skepticism - among organizers, a long-term hurdle</li>
+<li>Organizer Involvement in Dev - buy-in and quick use-case testing</li>
+
+        </div>
 
     
 
