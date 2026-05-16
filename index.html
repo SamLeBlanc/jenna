@@ -19,7 +19,7 @@
 
 <body>
 
-<div class="sticky-top"> 
+<div class="sticky-top">
 
 <header>
   <img src="TingTag_no_bg.png" alt="TingTag logo" class="header-logo"/>
@@ -54,7 +54,7 @@
     <div class="info-section">
       <h2>Synopsis</h2>
       <div class="info-bio">
-        Through the Data x Power fellowship, this project was developed to solve an issue within the progressive tech space - how can we easily group conversations for follow-up without adding extra steps for organizers? Throughout  this project’s development though, a broader question arose around the potential for AI usage within progressive spaces and whether organizers would be willing to engage with AI tech. This final project, in addition to the model research, serves as a model for how organizers and technologists can develop tools  together to ensure greater buy-in and longer-term use. 
+        Through the Data x Power fellowship, this project was developed to solve an issue within the progressive tech space - how can we easily group conversations for follow-up without adding extra steps for organizers? Throughout  this project’s development though, a broader question arose around the potential for AI usage within progressive spaces and whether organizers would be willing to engage with AI tech. This final project, in addition to the model research, serves as a model for how organizers and technologists can develop tools  together to ensure greater buy-in and longer-term use.
       </div>
     </div>
    
@@ -74,22 +74,24 @@
 
     <div class="info-section">
       <h2>About This Project</h2>
+      <br>
       <h3>The Problem
       </h3>
       <div class="info-bio">
         When organizers talk to   their communities, they often take notes about their interactions to document and facilitate  follow-up outreach. But many tools don’t allow for easy search terms to group these folks by their key issue areas. For example, if a community member is talking to an organizer about the affordability of their prescriptions and healthcare generally during this current administration, how can we quickly tag this person as caring about “healthcare” for future follow-up in upcoming program?        </div>
-
+        <br>
 
       <h3>The Process
       </h3>
       <div class="info-bio">
-        Many CRM tools already exist to house organizer notes, so the solution will not be developing a new tool. Instead, the solution here will be presenting the research and proven methods to implement this concept into existing tools. Knowing that this solution will require use of Artificial Intelligence and, through personal experience, that AI is a divisive topic among progressives, an additional point of research was added to understand how implementation of a tool like this would work. Ie. would organizers be too skeptical of AI to establish enough support for this to work?        
+        Many CRM tools already exist to house organizer notes, so the solution will not be developing a new tool. Instead, the solution here will be presenting the research and proven methods to implement this concept into existing tools. Knowing that this solution will require use of Artificial Intelligence and, through personal experience, that AI is a divisive topic among progressives, an additional point of research was added to understand how implementation of a tool like this would work. Ie. would organizers be too skeptical of AI to establish enough support for this to work?
       </div>
+      <br>
 
       <h3>The Solution
       </h3>
       <div class="info-bio">
-        Presented on this site is a comparative analysis of different methods that could create tags of organizer notes and a demo of one of the methods. The tag examples of constituent issues can be found here as well as some the full list of sample notes used to test the models. Additionally, thoughts on AI implementation among progressive organizers are presented, in the form of anecdotal survey responses.
+        Presented on this site is a comparative analysis of different methods of Topic Modeling using Natural Language Processing (NLP) that could create tags of organizer notes and a demo of all proposed methods. The recommendation is implementing this into existing movement CRMs using a layered approach of at least 2 of the 3 NLP methods.
         
       </div>
       </div>
@@ -561,7 +563,7 @@ else:
 
 
 <!-- ════════════════════════════════════════════════════
-     TAB 3 — EVALUATION METRICS
+     TAB 4 — EVALUATION METRICS
      ════════════════════════════════════════════════════ -->
 <div id="tab-metrics" class="tab-panel" role="tabpanel">
   <div class="page-content">
@@ -616,7 +618,7 @@ else:
 
 
 <!-- ════════════════════════════════════════════════════
-     TAB 4 — PROJECT DETAILS
+     TAB 3 — PROJECT DETAILS
      ════════════════════════════════════════════════════ -->
 <div id="tab-details" class="tab-panel" role="tabpanel">
   <div class="page-content">
@@ -624,24 +626,29 @@ else:
     <div class="projects-intro">
       <h1>Project Details</h1>
     </div>
-
+    <br><br>
     <div class="model-intro-section">
 
       <div class="sub-section">
-        When organizers talk to folks in their communities, they often take notes about their interactions to document and facilitate aid in follow-up outreach. But many tools don’t allow for easy search terms to group these folks by their key issue areas. How can we easily group these conversation notes for follow-up without adding extra steps? How can we automatically turn this qualitative data, that folks are already collecting, into categories defining the issues community members care most about?
+        
+      Instead of developing an entirely new tool, research is compiled below so that existing field tools can implement a similar model into their systems. Each avenue explored has its own demo to try out the model’s performance followed by some comparative analysis.
+   
+      <div class="projects-intro">
+      <h2>Logistics</h2>
+            <div class="sub-section">
+        Implementing Topic Modeling using Natural Language Processing will ideally look something like: 
+        <ol>
+            <li>Start with a list of pre-determined candidates for tags, like "Economy", "Healthcare", or "Immigration". </li>
+            <li>Model runs in the background and assigns issue tags to the note based on the content.</li>
+            <li>Tags, one or two if relevant, are assigned to summarize the consituent's current concerns. </li>
+    </ol>
+    <br><br>
+            </div>
 
-          <br> <br>
-
-        The answer is with an NLP model integration that takes field notes and converts them into issue tags. This answer, though, poses a larger question to the progressive community - how do we safely and effectively integrate AI tools into our ecosystem? How do we do so safely and as good stewards of community data? How can progressive tech developers involve organizers in their development process to ensure organizer buy-in, especially when distrust of AI runs deep in the progressive community?
-
-          <br> <br>
-
-        Instead of developing an entirely new tool, I’ve detailed my research and thought process below so that existing field tools can implement a similar model into their systems. Each avenue I explored has its own demo to try out the model’s performance followed by some comparative analysis.
-          <br> <br>
-
-
-        Here is a list of all the tags chosen for this project, using this Gallup Poll’s list of most important issues influencing the 2024 election as a starting point. A predetermined list of keyword candidates were chosen instead of allowing the model to assign topics randomly to ensure data cleanliness.
-
+   <div class="projects-intro">
+      <h2>Issue Tags: Candidates</h2>
+    </div>
+        All the tags chosen for this project, using this Gallup Poll’s list of most important issues influencing the 2024 election as a starting point. A predetermined list of keyword candidates were chosen instead of allowing the model to assign topics randomly to ensure data cleanliness.
           <ul>
             <li>Economy</li>
             <li>Democracy</li>
@@ -661,8 +668,11 @@ else:
           </ul>
       </div>
 
-    </div> 
+    </div>
 
+    <div class="projects-intro">
+      <h1>Approaches + Models</h1>
+    </div>
 
     <!-- ══════════════════════════════════════════════════
          MODEL SECTION 1 — KEYWORD EXTRACTION (KeyBERT)
@@ -673,9 +683,7 @@ else:
       </div>
 
       <div class="sub-section">
-        <h3>What Is Keyword Extraction?</h3>
         The first and simplest approach to this problem is keyword extraction. It requires the least amount of processing power and coding effort, but isn’t very intelligent - needing the exact keyword to be present in the note text to match the list of keywords. Here are two short and relatively easy examples to demonstrate the model’s pros + cons. . 
-        
       </div>
 
       <div class="code-block">
