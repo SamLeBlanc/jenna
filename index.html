@@ -1,68 +1,3 @@
-
-Claude finished the response
-in the attached html code -
-
-9:51 PM
-I don't see any attached HTML code in your message. It looks like the file may not have uploaded, or the text didn't come through.
-
-Could you try again? You can paste the HTML directly into the chat or re-attach the file. Once I can see it, let me know what you'd like help with—debugging, explaining what it does, modifying it, or something else.
-
-
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0"/> <title>Tingum's Tagging</title> <link rel="stylesheet" href="styles.css"/> <!-- CodeMirror --> <link rel="stylesheet" href="https://cdnjs.cloudflare.c
-
-pasted
-
-I need you to clean up this html code plus make sure all bullet points are indented, add a new tab for "Cost Benefit Analysis" with room for text + a picture + more text, link this Gallup Poll  where it's referenced https://news.gallup.com/poll/651719/economy-important-issue-2024-presidential-vote.aspx, and move the sample notes to the bottom of the Project Demo page instead of above the code.
-
-9:54 PM
-
-Architected comprehensive HTML restructuring with tag fixes and new content sections
-Architected comprehensive HTML restructuring with tag fixes and new content sections
-I can see the full HTML. Before writing, let me note the main issues I found so the cleanup is clear: several mismatched tags (<h3>…</h2>), an unclosed <ol>/<li> in the SpaCy section, model-section <div>s that never close (so they nest inside each other), an orphan </ul> in the Metrics tab, and the panels are in a different source order than the nav. I'll fix all of that while preserving your classes and Python code exactly so it keeps working with your styles.css and app.js.
-
-Let me build the cleaned file.
-
-
-Creating the cleaned-up HTML with new Cost Benefit Analysis tab, Gallup link, indented bullets, and sample notes moved to bottom of demo
-Creating the cleaned-up HTML with new Cost Benefit Analysis tab, Gallup link, indented bullets, and sample notes moved to bottom of demo
-Done. Here's the cleaned file.
-
-
-Presented file
-Presented file
-Here's what I changed:
-
-Cleanup / structural fixes
-
-Fixed mismatched tags: <h3>Spacy</h2>, <h3>Zero Shot Classification</h2>, and <h3>Sentence Transformers</h2> now open and close correctly (and "Spacy" → "SpaCy").
-Closed the orphaned <ol>/<li> in the SpaCy "3 Layers" list, which had swallowed the code block below it.
-Closed the model-keybert, model-claude, and model-nlp sections properly — previously they nested inside each other because closing </div>s were missing.
-Removed the stray </ul> floating in the Evaluation Metrics tab.
-Closed the Recommendations <ul> and tidied its wrapper.
-Re-indented everything consistently and reordered the panels in the source to match the nav order (Overview → Demo → Details → Metrics → CBA → Contact). Your data-tab/id hooks are unchanged, so app.js keeps working.
-Bullet indentation — added a small <style> block in the <head> so every ul/ol inside .page-content is uniformly indented, and removed the scattered inline padding-left:20px so it's consistent everywhere.
-
-New "Cost Benefit Analysis" tab — added a nav button (data-tab="cba") and a matching #tab-cba panel with a text block, an image (cost_benefit.png), and a second text block. The text and image src are marked with TODO comments for you to fill in / swap.
-
-Gallup Poll link — "Gallup Poll" in the Issue Tags: Candidates section now links to the URL you gave, opening in a new tab.
-
-Sample Notes moved — they now sit at the bottom of the Project Demo page, below the demo code block, in their own info-section. The intro paragraph's wording was updated to point readers downward.
-
-Two things I intentionally left alone: your commented-out email/contact values (didn't want to expose personal info you'd hidden), and all the Python inside the editors (preserved verbatim). The CBA tab assumes your styles.css already styles .info-section/.info-img/.projects-intro the same way the other tabs use them — if the new tab looks off, that's where to check.
-
-
-Index
-Code · HTML 
-
-
-
-
-
-Claude is AI and can make mistakes. Please double-check responses.
-
-
-raw
-Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +5,7 @@ Index · HTML
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tingum's Tagging</title>
   <link rel="stylesheet" href="styles.css" />
- 
+
   <!-- CodeMirror -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
@@ -78,7 +13,7 @@ Index · HTML
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
- 
+
   <!-- Ensure all bullet/numbered lists in content are consistently indented -->
   <style>
     .page-content ul,
@@ -91,11 +26,11 @@ Index · HTML
     }
   </style>
 </head>
- 
+
 <body>
- 
+
   <div class="sticky-top">
- 
+
     <header>
       <img src="TingTag_no_bg.png" alt="TingTag logo" class="header-logo" />
       <div class="logo">Tingum's Tagging</div>
@@ -105,7 +40,7 @@ Index · HTML
         <span id="statusText">Idle</span>
       </div>
     </header>
- 
+
     <nav class="tab-nav" role="tablist">
       <button class="tab-btn active" data-tab="intro"   role="tab">Overview</button>
       <button class="tab-btn"        data-tab="demo"    role="tab">Project Demo</button>
@@ -114,35 +49,35 @@ Index · HTML
       <button class="tab-btn"        data-tab="cba"     role="tab">Cost Benefit Analysis</button>
       <button class="tab-btn"        data-tab="contact" role="tab">Contact</button>
     </nav>
- 
+
   </div>
- 
- 
+
+
   <!-- ════════════════════════════════════════════════════
        TAB 1 — OVERVIEW
        ════════════════════════════════════════════════════ -->
   <div id="tab-intro" class="tab-panel active" role="tabpanel">
     <div class="page-content">
- 
+
       <div class="info-section">
         <h2>Synopsis</h2>
         <div class="info-bio">
           Through the Data x Power fellowship, this project was developed to solve an issue within the progressive tech space - how can we easily group conversations for follow-up without adding extra steps for organizers? Throughout this project's development though, a broader question arose around the potential for AI usage within progressive spaces and whether organizers would be willing to engage with AI tech. This final project, in addition to the model research, serves as a model for how organizers and technologists can develop tools together to ensure greater buy-in and longer-term use.
         </div>
       </div>
- 
+
       <img src="logo.png" class="info-img" style="width: 50%; height: auto;" />
- 
+
       <div class="info-section">
         <h2>DxP</h2>
         <div class="info-bio">
           In 2021, Ford Foundation partnered with re:power Fund to create a space to build collective strategy and innovation through a 10-month fellowship for movement-centered data experts. Each year, a new cohort of twelve fellows are selected to work on a project that will address network-wide data and technology issues. They undergo a series of skill-based trainings, receive a mentor, and have access to funding that enables exploration, experimentation and completion of the project.
         </div>
       </div>
- 
+
       <br><br>
       <img src="TingTag_no_bg.png" class="info-img" style="width: 50%; height: auto;" />
- 
+
       <div class="info-section">
         <h2>About This Project</h2>
         <br>
@@ -151,36 +86,36 @@ Index · HTML
           When organizers talk to their communities, they often take notes about their interactions to document and facilitate follow-up outreach. But many tools don't allow for easy search terms to group these folks by their key issue areas. For example, if a community member is talking to an organizer about the affordability of their prescriptions and healthcare generally during this current administration, how can we quickly tag this person as caring about "healthcare" for future follow-up in upcoming program?
         </div>
         <br>
- 
+
         <h3>The Process</h3>
         <div class="info-bio">
           Many CRM tools already exist to house organizer notes, so the solution will not be developing a new tool. Instead, the solution here will be presenting the research and proven methods to implement this concept into existing tools. Knowing that this solution will require use of Artificial Intelligence and, through personal experience, that AI is a divisive topic among progressives, an additional point of research was added to understand how implementation of a tool like this would work. Ie. would organizers be too skeptical of AI to establish enough support for this to work?
         </div>
         <br>
- 
+
         <h3>The Solution</h3>
         <div class="info-bio">
           Presented on this site is a comparative analysis of different methods of Topic Modeling using Natural Language Processing (NLP) that could create tags of organizer notes and a demo of all proposed methods. The recommendation is implementing this into existing movement CRMs using a layered approach of at least 2 of the 3 NLP methods.
         </div>
       </div>
- 
+
     </div>
   </div>
- 
- 
+
+
   <!-- ════════════════════════════════════════════════════
        TAB 2 — PROJECT DEMO
        ════════════════════════════════════════════════════ -->
   <div id="tab-demo" class="tab-panel" role="tabpanel">
     <div class="page-content">
- 
+
       <img src="TingTag_no_bg.png" class="info-img" style="width: 50%; height: auto;" />
- 
+
       <div class="projects-intro">
         <h1>Project Demo</h1>
         <p>Below is a demo of all 5 methods explored in the Project Details page. Input an example of a note that an organizer might make after a conversation and see if it accurately categorizes the constituent's main issue or issues. Find a few sample field notes at the bottom of this page, but you're encouraged to test the models' limitations with your own examples.</p>
       </div>
- 
+
       <div class="code-block">
         <div class="block-header">
           <div class="block-meta">
@@ -210,12 +145,12 @@ SpaCy
 Zero-Shot Classification
 Sentence Transformers 
 """
- 
+
 # import os
 # import sys
 # import warnings
 # import logging
- 
+
 # Suppress warnings from all libraries before any imports
 warnings.filterwarnings("ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"  # Suppresses HuggingFace tokenizer fork warning
@@ -224,9 +159,9 @@ logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
 logging.getLogger("torch").setLevel(logging.ERROR)
 logging.getLogger("keybert").setLevel(logging.ERROR)
 logging.getLogger("spacy").setLevel(logging.ERROR)
- 
+
 # ── Shared Config ─────────────────────────────────────────────────────────────
- 
+
 CANDIDATES = [
     "Economy",
     "Democracy in the US",
@@ -244,9 +179,9 @@ CANDIDATES = [
     "LGBTQ+ rights",
     "Housing",
 ]
- 
+
 # ── Model 1: KeyBERT ──────────────────────────────────────────────────────────
- 
+
 def run_keybert(doc: str) -> str:
     try:
         # from keybert import KeyBERT
@@ -259,10 +194,10 @@ def run_keybert(doc: str) -> str:
         return "No match"
     except Exception as e:
         return f"Error: {e}"
- 
- 
+
+
 # ── Model 2: Claude API ───────────────────────────────────────────────────────
- 
+
 def run_claude(doc: str) -> str:
     try:
         # import anthropic
@@ -284,10 +219,10 @@ def run_claude(doc: str) -> str:
         return message.content[0].text.strip()
     except Exception as e:
         return f"Error: {e}"
- 
- 
+
+
 # ── Model 3: spaCy (multi-layer matcher) ─────────────────────────────────────
- 
+
 SPACY_KEYWORDS = {
     "The Economy": [
         "inflation", "prices", "affordability", "wages", "jobs",
@@ -440,20 +375,20 @@ SPACY_KEYWORDS = {
         "displacement", "unaffordability", "speculation", "neglect", "instability",
     ],
 }
- 
+
 VECTOR_THRESHOLD = 0.55
 SECOND_ISSUE_MIN_RATIO = 0.65
- 
+
 def run_spacy(note_text: str) -> str:
     try:
         # import spacy
         # from spacy.matcher import Matcher, PhraseMatcher
         # nlp = spacy.load("en_core_web_lg")
- 
+
         phrase_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
         token_matcher  = Matcher(nlp.vocab)
         issue_vectors  = {}
- 
+
         for issue, terms in SPACY_KEYWORDS.items():
             phrase_matcher.add(issue, [nlp.make_doc(t) for t in terms])
             single = [t for t in terms if len(t.split()) == 1]
@@ -473,20 +408,20 @@ def run_spacy(note_text: str) -> str:
             if vecs:
                 import numpy as np
                 issue_vectors[issue] = np.mean(vecs, axis=0)
- 
+
         def cosine_sim(doc, vec):
             if not doc.has_vector: return 0.0
             import numpy as np
             denom = np.linalg.norm(doc.vector) * np.linalg.norm(vec)
             return float(np.dot(doc.vector, vec) / denom) if denom else 0.0
- 
+
         doc        = nlp(note_text)
         hit_counts = {}
- 
+
         for match_id, _s, _e in phrase_matcher(doc):
             label = nlp.vocab.strings[match_id]
             hit_counts[label] = hit_counts.get(label, 0) + 1
- 
+
         for match_id, _s, _e in token_matcher(doc):
             raw = nlp.vocab.strings[match_id]
             for prefix in ("LEMMA_", "POS_", "LOWER_"):
@@ -494,16 +429,16 @@ def run_spacy(note_text: str) -> str:
                     label = raw[len(prefix):]
                     hit_counts[label] = hit_counts.get(label, 0) + 1
                     break
- 
+
         if not hit_counts:
             for issue, vec in issue_vectors.items():
                 score = cosine_sim(doc, vec)
                 if score >= VECTOR_THRESHOLD:
                     hit_counts[issue] = round(score * 2)
- 
+
         if not hit_counts:
             return "Unclassified"
- 
+
         ranked = sorted(hit_counts.items(), key=lambda x: x[1], reverse=True)
         top_issue, top_count = ranked[0]
         result = [top_issue]
@@ -514,10 +449,10 @@ def run_spacy(note_text: str) -> str:
         return ", ".join(result)
     except Exception as e:
         return f"Error: {e}"
- 
- 
+
+
 # ── Model 4: Zero-Shot Classification (facebook/bart-large-mnli) ──────────────
- 
+
 def run_zero_shot(doc: str) -> str:
     try:
         # from transformers import pipeline
@@ -526,10 +461,10 @@ def run_zero_shot(doc: str) -> str:
         return result["labels"][0]
     except Exception as e:
         return f"Error: {e}"
- 
- 
+
+
 # ── Model 5: Sentence Transformers ───────────────────────────────────────────
- 
+
 SENTENCE_TRANSFORMER_CANDIDATES = ["Economy",
              "Democracy in the US",
              "Terrorism",
@@ -545,9 +480,9 @@ SENTENCE_TRANSFORMER_CANDIDATES = ["Economy",
              "Race Relations",
              "LGBTQ+ rights",
              "Housing"]
- 
+
 SECOND_KEYWORD_THRESHOLD = 0.40
- 
+
 def run_sentence_transformer(doc: str) -> str:
     try:
         # from sentence_transformers import SentenceTransformer, util
@@ -564,32 +499,32 @@ def run_sentence_transformer(doc: str) -> str:
         return ", ".join(result)
     except Exception as e:
         return f"Error: {e}"
- 
- 
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
- 
+
 note = input("Enter a field note: ").strip()
 if not note:
     print("No input provided.")
 else:
     print("\nRunning all classifiers...\n")
     print("-" * 50)
- 
+
     print("KeyBERT:              ", end="", flush=True)
     print(run_keybert(note))
- 
+
     print("Claude:               ", end="", flush=True)
     print(run_claude(note))
- 
+
     print("SpaCy:                ", end="", flush=True)
     print(run_spacy(note))
- 
+
     print("Zero-Shot (BART):     ", end="", flush=True)
     print(run_zero_shot(note))
- 
+
     print("Sentence Transformer: ", end="", flush=True)
     print(run_sentence_transformer(note))
- 
+
     print("-" * 50)
 </textarea>
           <div class="run-hint">Ctrl+Enter to run</div>
@@ -600,9 +535,9 @@ else:
           <div class="output-images"></div>
         </div>
       </div>
- 
+
       <br><br>
- 
+
       <!-- Sample notes moved here, below the demo code block -->
       <div class="info-section">
         <h2>Sample Notes</h2>
@@ -617,47 +552,47 @@ else:
           </ul>
         </div>
       </div>
- 
+
       <br><br>
- 
+
     </div>
   </div>
- 
- 
+
+
   <!-- ════════════════════════════════════════════════════
        TAB 3 — PROJECT DETAILS
        ════════════════════════════════════════════════════ -->
   <div id="tab-details" class="tab-panel" role="tabpanel">
     <div class="page-content">
- 
+
       <div class="projects-intro">
         <h1>Project Details</h1>
       </div>
- 
+
       <div class="model-intro-section">
- 
+
         <div class="sub-section">
           Instead of developing an entirely new tool, research is compiled below so that existing field tools can implement a similar model into their systems. Each avenue explored has its own demo to try out the model's performance followed by some comparative analysis.
- 
+
           <div class="projects-intro">
             <h2>Logistics</h2>
           </div>
- 
+
           Implementing Topic Modeling using Natural Language Processing will ideally look something like:
- 
+
           <ol>
             <li>Start with a list of pre-determined candidates for tags, like "Economy", "Healthcare", or "Immigration".</li>
             <li>Model runs in the background and assigns issue tags to the note based on the content.</li>
             <li>Tags, one or two if relevant, are assigned to summarize the constituent's current concerns.</li>
           </ol>
         </div>
- 
+
         <div class="projects-intro">
           <h2>Issue Tags: Candidates</h2>
         </div>
- 
+
         All the tags chosen for this project, using this <a href="https://news.gallup.com/poll/651719/economy-important-issue-2024-presidential-vote.aspx" target="_blank" rel="noopener">Gallup Poll</a>'s list of most important issues influencing the 2024 election as a starting point. A predetermined list of keyword candidates were chosen instead of allowing the model to assign topics randomly to ensure data cleanliness.
- 
+
         <ul>
           <li>Economy</li>
           <li>Democracy</li>
@@ -675,13 +610,13 @@ else:
           <li>LGBTQ+ Rights</li>
           <li>Housing</li>
         </ul>
- 
+
       </div>
- 
+
       <div class="projects-intro">
         <h1>Approaches + Models</h1>
       </div>
- 
+
       <!-- ══════════════════════════════════════════════════
            MODEL SECTION 1 — KEYWORD EXTRACTION (KeyBERT)
            ══════════════════════════════════════════════════ -->
@@ -689,11 +624,11 @@ else:
         <div class="model-section-header">
           <h2>Keyword Extraction (KeyBERT)</h2>
         </div>
- 
+
         <div class="sub-section">
           The first and simplest approach to this problem is keyword extraction. It requires the least amount of processing power and coding effort, but isn't very intelligent - needing the exact keyword to be present in the note text to match the list of keywords. Here are two short and relatively easy examples to demonstrate the model's pros + cons.
         </div>
- 
+
         <div class="code-block">
           <div class="block-header">
             <div class="block-meta">
@@ -713,7 +648,7 @@ else:
           <div class="editor-wrap">
             <textarea class="py-src"># from keybert import KeyBERT
 # kw_model = KeyBERT()
- 
+
 doc = input("Enter a sample field note: ")
 candidates = ["Economy",
              "Democracy in the US",
@@ -741,7 +676,7 @@ print(keywords)
             <div class="output-images"></div>
           </div>
         </div>
- 
+
         <div class="sub-section">
           <h3>Examples</h3>
           <div class="sub-section">
@@ -750,7 +685,7 @@ print(keywords)
             It's clear the main tag here should be "economy", but the model turns up nothing. Now, try changing the word "affordability" to "the economy" and it quickly returns the correct value.
           </div>
         </div>
- 
+
         <div class="sub-section">
           <h3>Pros & Cons</h3>
           <div class="pros-cons-grid">
@@ -770,9 +705,9 @@ print(keywords)
             </div>
           </div>
         </div>
- 
+
       </div>
- 
+
       <!-- ══════════════════════════════════════════════════
            MODEL SECTION 2 — PRE-EXISTING LLM (CLAUDE)
            ══════════════════════════════════════════════════ -->
@@ -780,7 +715,7 @@ print(keywords)
         <div class="model-section-header">
           <h2>Out-of-the-Box LLM (Claude)</h2>
         </div>
- 
+
         <div class="sub-section">
           On the opposite end of this model spectrum is a fully developed LLM that's pre-existing and pre-packaged. This is a far more intelligent approach but requires a lot more computing power, cost, and energy. It's also likely to have a steeper buy-in process with organizers.
           <br>
@@ -799,7 +734,7 @@ print(keywords)
           Unsurprisingly, an LLM like Claude can create correct output to simple organizer notes. Try this example to test it:
           "Has a 7 and 9 year old and thinking about moving schools because they're worried about the quality of education at the public school. Lots of religion being pushed that makes them uncomfortable. Was asking about our candidate's stance on school choice and resources about vouchers."
         </div>
- 
+
         <div class="code-block">
           <div class="block-header">
             <div class="block-meta">
@@ -839,7 +774,7 @@ print(message.content[0].text)</textarea>
             <div class="output-images"></div>
           </div>
         </div>
- 
+
         <div class="sub-section">
           <h3>Pros & Cons</h3>
           <div class="pros-cons-grid">
@@ -861,9 +796,9 @@ print(message.content[0].text)</textarea>
             </div>
           </div>
         </div>
- 
+
       </div>
- 
+
       <!-- ══════════════════════════════════════════════════
            MODEL SECTION 3 — NLP TRIO (SpaCy / Zero-Shot / Sentence Transformers)
            ══════════════════════════════════════════════════ -->
@@ -871,15 +806,15 @@ print(message.content[0].text)</textarea>
         <div class="model-section-header">
           <h2>Tingum's Tagging</h2>
         </div>
- 
+
         <h2>Logistics</h2>
- 
+
         <div class="sub-section">
           It's clear, then, that a happy medium is needed that incorporates the simplicity of keyword extraction and the intelligence of an LLM. We'll explore three options below - SpaCy, Zero-Shot Classification, and Sentence Transformers.
         </div>
- 
+
         <h3>SpaCy</h3>
- 
+
         <div class="sub-section">
           SpaCy is an NLP model developed by MIT that acts most similarly to keyword extraction of our three options. This model uses three different methods to understand the input and produce one or two keyword tags -
           <br>
@@ -890,7 +825,7 @@ print(message.content[0].text)</textarea>
             <li>Vector Similarity - looks at the overall meaning of the note and compares it to the meaning of the keywords using word vectors, allowing for more nuanced matches</li>
           </ol>
         </div>
- 
+
         <div class="code-block">
           <div class="block-header">
             <div class="block-meta"></div>
@@ -908,23 +843,23 @@ print(message.content[0].text)</textarea>
             <textarea class="py-src"># import numpy as np
 # import spacy
 # from spacy.matcher import Matcher, PhraseMatcher
- 
- 
+
+
 # ── Config ────────────────────────────────────────────────────────────────────
- 
- 
+
+
 # Minimum vector cosine similarity to count as a match (Layer 3 only)
 VECTOR_THRESHOLD = 0.55
- 
- 
+
+
 # Second issue is only returned if its hit count is at least this fraction
 # of the top issue's hit count. 0.5 = needs half as many hits as the top.
 SECOND_ISSUE_MIN_RATIO = 0.5
- 
- 
+
+
 # ── Keyword Bank ──────────────────────────────────────────────────────────────
- 
- 
+
+
 KEYWORDS = {
    "The Economy": [
        "inflation", "prices", "affordability", "wages", "jobs",
@@ -1077,41 +1012,41 @@ KEYWORDS = {
        "displacement", "unaffordability", "speculation", "neglect", "instability",
    ],
 }
- 
- 
+
+
 # ── Load model ────────────────────────────────────────────────────────────────
- 
- 
+
+
 print("Loading spaCy model (en_core_web_lg)...")
 nlp = spacy.load("en_core_web_lg")
- 
- 
+
+
 # ── Layer 1: PhraseMatcher ────────────────────────────────────────────────────
- 
- 
+
+
 phrase_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
 for issue, terms in KEYWORDS.items():
    patterns = [nlp.make_doc(term) for term in terms]
    phrase_matcher.add(issue, patterns)
- 
- 
+
+
 # ── Layer 2: Token Matcher (LEMMA, POS+LEMMA, LOWER) ─────────────────────────
- 
- 
+
+
 token_matcher = Matcher(nlp.vocab)
- 
- 
+
+
 for issue, terms in KEYWORDS.items():
    single_word_terms = [t for t in terms if len(t.split()) == 1]
    if not single_word_terms:
        continue
- 
- 
+
+
    lemma_patterns = []
    pos_patterns   = []
    lower_patterns = []
- 
- 
+
+
    for term in single_word_terms:
        term_doc = nlp(term)
        if not term_doc:
@@ -1120,54 +1055,54 @@ for issue, terms in KEYWORDS.items():
        lemma     = token.lemma_
        pos       = token.pos_
        lower_str = term.lower()
- 
- 
+
+
        # LEMMA — catches inflected forms: "teachers" → "teacher"
        lemma_patterns.append([{"LEMMA": lemma}])
- 
- 
+
+
        # POS + LEMMA — same base form AND part of speech, reduces false positives
        if pos in ("NOUN", "VERB", "PROPN", "ADJ"):
            pos_patterns.append([{"LEMMA": lemma, "POS": pos}])
- 
- 
+
+
        # LOWER — catches caps variants: "INSULIN", "Medicaid"
        lower_patterns.append([{"LOWER": lower_str}])
- 
- 
+
+
    if lemma_patterns:
        token_matcher.add(f"LEMMA_{issue}", lemma_patterns)
    if pos_patterns:
        token_matcher.add(f"POS_{issue}", pos_patterns)
    if lower_patterns:
        token_matcher.add(f"LOWER_{issue}", lower_patterns)
- 
- 
+
+
 # ── Layer 3: Issue vectors ────────────────────────────────────────────────────
- 
- 
+
+
 print("Building issue vectors...")
 issue_vectors: dict[str, np.ndarray] = {}
 for issue, terms in KEYWORDS.items():
    vecs = [nlp(term).vector for term in terms if nlp(term).has_vector]
    if vecs:
        issue_vectors[issue] = np.mean(vecs, axis=0)
- 
- 
- 
- 
+
+
+
+
 def _cosine_similarity(doc, issue_vec: np.ndarray) -> float:
    if not doc.has_vector:
        return 0.0
    denom = np.linalg.norm(doc.vector) * np.linalg.norm(issue_vec)
    return float(np.dot(doc.vector, issue_vec) / denom) if denom else 0.0
- 
- 
- 
- 
+
+
+
+
 # ── Classifier ────────────────────────────────────────────────────────────────
- 
- 
+
+
 def classify_note(note_text: str) -> list[str]:
    """
    Takes a paragraph of canvassing note text.
@@ -1176,14 +1111,14 @@ def classify_note(note_text: str) -> list[str]:
    """
    doc = nlp(note_text)
    hit_counts: dict[str, int] = {}
- 
- 
+
+
    # Layer 1 — exact phrase hits
    for match_id, _s, _e in phrase_matcher(doc):
        label = nlp.vocab.strings[match_id]
        hit_counts[label] = hit_counts.get(label, 0) + 1
- 
- 
+
+
    # Layer 2 — token attribute hits
    for match_id, _s, _e in token_matcher(doc):
        raw_key = nlp.vocab.strings[match_id]
@@ -1192,8 +1127,8 @@ def classify_note(note_text: str) -> list[str]:
                label = raw_key[len(prefix):]
                hit_counts[label] = hit_counts.get(label, 0) + 1
                break
- 
- 
+
+
    # Layer 3 — vector fallback (only when nothing matched above)
    if not hit_counts:
        scores = {
@@ -1203,34 +1138,34 @@ def classify_note(note_text: str) -> list[str]:
        for issue, score in scores.items():
            if score >= VECTOR_THRESHOLD:
                hit_counts[issue] = round(score * 2)  # proxy hit count
- 
- 
+
+
    if not hit_counts:
        return ["Unclassified"]
- 
- 
+
+
    # Rank by hit count
    ranked = sorted(hit_counts.items(), key=lambda x: x[1], reverse=True)
    top_issue, top_count = ranked[0]
- 
- 
+
+
    result = [top_issue]
- 
- 
+
+
    # Only add a second issue if it has enough hits relative to the top
    if len(ranked) > 1:
        second_issue, second_count = ranked[1]
        if second_count >= top_count * SECOND_ISSUE_MIN_RATIO:
            result.append(second_issue)
- 
- 
+
+
    return result
- 
- 
- 
- 
+
+
+
+
 # ── Run ───────────────────────────────────────────────────────────────────────
- 
+
 note = input("Note: ").strip()
 if note:
     result = classify_note(note)
@@ -1244,7 +1179,7 @@ if note:
             <div class="output-images"></div>
           </div>
         </div>
- 
+
         <div class="sub-section">
           <h3>Pros & Cons</h3>
           <div class="pros-cons-grid">
@@ -1265,9 +1200,9 @@ if note:
             </div>
           </div>
         </div>
- 
+
         <h3>Zero Shot Classification</h3>
- 
+
         <div class="sub-section">
           Zero-Shot Classification is a type of NLP model that can classify text into categories it hasn't seen before. It uses Natural Language Inference (NLI) to determine logical implication of a note related to the keyword candidate list.
           It asks the question:
@@ -1276,7 +1211,7 @@ if note:
           <br>
           Then it scores each result and outputs the highest score(s).
         </div>
- 
+
         <div class="code-block">
           <div class="block-header">
             <div class="block-meta"></div>
@@ -1294,11 +1229,11 @@ if note:
             <textarea class="py-src"># import pandas as pd
 # from transformers import pipeline
 # import torch
- 
- 
+
+
 classifier = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')
- 
- 
+
+
 candidates = ["Economy",
              "Democracy in the US",
              "Terrorism",
@@ -1328,7 +1263,7 @@ print(pred_cat)
             <div class="output-images"></div>
           </div>
         </div>
- 
+
         <div class="sub-section">
           <h3>Pros & Cons</h3>
           <div class="pros-cons-grid">
@@ -1349,13 +1284,13 @@ print(pred_cat)
             </div>
           </div>
         </div>
- 
+
         <h3>Sentence Transformers</h3>
- 
+
         <div class="sub-section">
           Sentence Transformers is a type of NLP model that tests similarity of the field note and each of the keyword candidates. Turning the notes into vector embeddings, it measures the cosine similarity of the note vector and each keyword vector, outputting the keyword(s) with the highest similarity score(s).
         </div>
- 
+
         <div class="code-block">
           <div class="block-header">
             <div class="block-meta"></div>
@@ -1373,8 +1308,8 @@ print(pred_cat)
             <textarea class="py-src"># from sentence_transformers import SentenceTransformer, util
 # model = SentenceTransformer("all-MiniLM-L6-v2")
 model = sentence_model
- 
- 
+
+
 KEYWORD_BANK = ["Economy",
              "Democracy in the US",
              "Terrorism",
@@ -1390,31 +1325,31 @@ KEYWORD_BANK = ["Economy",
              "Race Relations",
              "LGBTQ+ rights",
              "Housing"]
- 
- 
+
+
 keyword_embeddings = model.encode(KEYWORD_BANK, convert_to_tensor=True)
- 
- 
+
+
 SECOND_KEYWORD_THRESHOLD = 0.40
- 
- 
- 
- 
+
+
+
+
 def classify_note(note, threshold=SECOND_KEYWORD_THRESHOLD):
    note_embedding = model.encode(note, convert_to_tensor=True)
    scores = util.cos_sim(note_embedding, keyword_embeddings)[0]
   
    top_indices = scores.topk(2).indices.tolist()
    top_scores = scores.topk(2).values.tolist()
- 
- 
+
+
    primary = KEYWORD_BANK[top_indices[0]]
    secondary = KEYWORD_BANK[top_indices[1]] if top_scores[1] >= threshold else None
- 
- 
+
+
    return primary, secondary
- 
- 
+
+
 note = input("Enter field note: ")
 primary, secondary = classify_note(note)
 keywords = [primary] + ([secondary] if secondary else [])
@@ -1428,7 +1363,7 @@ print(f"Keywords: {keywords}")
             <div class="output-images"></div>
           </div>
         </div>
- 
+
         <div class="sub-section">
           <h3>Pros & Cons</h3>
           <div class="pros-cons-grid">
@@ -1448,9 +1383,9 @@ print(f"Keywords: {keywords}")
             </div>
           </div>
         </div>
- 
+
       </div>
- 
+
       <div class="info-section">
         <h2>Recommendations</h2>
         <div class="info-bio">
@@ -1464,28 +1399,28 @@ print(f"Keywords: {keywords}")
             <li>Organizer Involvement in Dev - buy-in and quick use-case testing</li>
           </ul>
         </div>
- 
+
         <div class="github-link-wrap">
           <a class="github-link" href="https://github.com/jennatingum" target="_blank" rel="noopener">
             🐙 GitHub
           </a>
         </div>
       </div>
- 
+
     </div>
   </div>
- 
- 
+
+
   <!-- ════════════════════════════════════════════════════
        TAB 4 — EVALUATION METRICS
        ════════════════════════════════════════════════════ -->
   <div id="tab-metrics" class="tab-panel" role="tabpanel">
     <div class="page-content">
- 
+
       <div class="projects-intro">
         <h1>Evaluation Metrics</h1>
       </div>
- 
+
       <div class="info-section">
         <h2>Ease of Implementation</h2>
         <div class="info-bio">This model must be easy to implement and edit as needs and issues change.</div>
@@ -1497,7 +1432,7 @@ print(f"Keywords: {keywords}")
           <li>Buy-in</li>
         </ul>
       </div>
- 
+
       <div class="info-section">
         <h2>Adaptability</h2>
         <div class="info-bio">Organizer's field notes can vary wildly - this tool needs to be able to account for variety.</div>
@@ -1509,7 +1444,7 @@ print(f"Keywords: {keywords}")
           <li>Multilingual Input</li>
         </ul>
       </div>
- 
+
       <div class="info-section">
         <h2>Smart Interpretation</h2>
         <div class="info-bio">This model needs to be able to understand context, and avoid extraneous information.</div>
@@ -1519,21 +1454,21 @@ print(f"Keywords: {keywords}")
           <li>Filter extraneous input</li>
         </ul>
       </div>
- 
+
     </div>
   </div>
- 
- 
+
+
   <!-- ════════════════════════════════════════════════════
        TAB 5 — COST BENEFIT ANALYSIS
        ════════════════════════════════════════════════════ -->
   <div id="tab-cba" class="tab-panel" role="tabpanel">
     <div class="page-content">
- 
+
       <div class="projects-intro">
         <h1>Cost Benefit Analysis</h1>
       </div>
- 
+
       <div class="info-section">
         <h2>Overview</h2>
         <div class="info-bio">
@@ -1543,10 +1478,10 @@ print(f"Keywords: {keywords}")
           better follow-up, cleaner data) for each modeling approach.
         </div>
       </div>
- 
+
       <!-- TODO: Replace src with your chart/diagram. Drop the image file next to this HTML. -->
       <img src="cost_benefit.png" alt="Cost benefit analysis chart" class="info-img" style="width: 60%; height: auto;" />
- 
+
       <div class="info-section">
         <h2>Analysis</h2>
         <div class="info-bio">
@@ -1555,48 +1490,48 @@ print(f"Keywords: {keywords}")
           means for a team deciding which approach (or layered combination of approaches) to adopt.
         </div>
       </div>
- 
+
     </div>
   </div>
- 
- 
+
+
   <!-- ════════════════════════════════════════════════════
        TAB 6 — CONTACT + ACKNOWLEDGEMENTS
        ════════════════════════════════════════════════════ -->
   <div id="tab-contact" class="tab-panel" role="tabpanel">
     <div class="page-content">
- 
+
       <div class="contact-intro">
         <h1>Contact</h1>
         <p></p>
       </div>
- 
+
       <div class="contact-grid">
- 
+
         <a class="contact-card" href="mailto:<!-- jennatingum@gmail.com -->">
           <div class="card-icon">✉️</div>
           <div class="card-label">Email</div>
           <div class="card-value"><!-- jennatingum@gmail.com --></div>
         </a>
- 
+
         <a class="contact-card" href="https://github.com/jennatingum/" target="_blank" rel="noopener">
           <div class="card-icon">🐙</div>
           <div class="card-label">GitHub</div>
           <div class="card-value"><!-- github.com/jennatingum --></div>
         </a>
- 
+
         <a class="contact-card" href="https://linkedin.com/in/jennatingum" target="_blank" rel="noopener">
           <div class="card-icon">💼</div>
           <div class="card-label">LinkedIn</div>
           <div class="card-value"><!-- linkedin.com/in/jennatingum --></div>
         </a>
- 
+
       </div>
- 
+
       <div class="ack-section">
         <h2>Acknowledgements</h2>
         <div class="ack-list">
- 
+
           <div class="ack-item">
             <div class="ack-icon">⭐</div>
             <div>
@@ -1604,7 +1539,7 @@ print(f"Keywords: {keywords}")
               <div class="ack-desc">My initial collaborator on this project through DxP. Her project can be found <a href="https://www.tl4pa.org/" target="_blank" rel="noopener">here</a> - and focuses on organizers' sentiment toward AI use in the space and how folks can engage with AI more ethically.</div>
             </div>
           </div>
- 
+
           <div class="ack-item">
             <div class="ack-icon">⭐</div>
             <div>
@@ -1612,7 +1547,7 @@ print(f"Keywords: {keywords}")
               <div class="ack-desc">Website Developer for this project. Couldn't do it without his incredible skill and moral support.</div>
             </div>
           </div>
- 
+
           <div class="ack-item">
             <div class="ack-icon">⭐</div>
             <div>
@@ -1620,16 +1555,15 @@ print(f"Keywords: {keywords}")
               <div class="ack-desc">The spark that started this whole project. Kate saw this gap in the space and suggested it to me during my initial brainstorming and I'm so grateful.</div>
             </div>
           </div>
- 
+
         </div>
       </div>
- 
+
     </div>
   </div>
- 
- 
+
+
   <script src="app.js"></script>
- 
+
 </body>
 </html>
- 
