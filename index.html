@@ -568,33 +568,6 @@ else:
        ════════════════════════════════════════════════════ -->
   <div id="tab-cba" class="tab-panel" role="tabpanel">
     <div class="page-content">
-
-      <div class="projects-intro">
-        <h1>Cost Benefit Analysis</h1>
-      </div>
-
-      <div class="info-section">
-        <h2>Overview</h2>
-        <div class="info-bio">
-          <!-- TODO: Replace with your intro text. This first block sits above the image. -->
-          Add your introductory text here — for example, framing how the costs (set-up effort,
-          compute, ongoing maintenance, organizer buy-in) weigh against the benefits (time saved,
-          better follow-up, cleaner data) for each modeling approach.
-        </div>
-      </div>
-
-      <!-- TODO: Replace src with your chart/diagram. Drop the image file next to this HTML. -->
-      <img src="cost_benefit.jpg" alt="Cost benefit analysis chart" class="info-img" style="width: 60%; height: auto;" />
-
-      <div class="info-section">
-        <h2>Analysis</h2>
-        <div class="info-bio">
-          <!-- TODO: Replace with your follow-up text. This block sits below the image. -->
-          Add your closing analysis here — walk through what the figure above shows and what it
-          means for a team deciding which approach (or layered combination of approaches) to adopt.
-        </div>
-      </div>
-
       <div class="projects-intro">
         <h1>Evaluation Metrics</h1>
       </div>
@@ -635,6 +608,25 @@ else:
         </ul>
       </div>
 
+      </div>
+
+      
+      <div class="projects-intro">
+        <h1>Cost Benefit Analysis</h1>
+      </div>
+
+      
+
+      <img src="Tingum DxP, personal copy.png" class="info-img" style="width: 60%; height: auto;" />
+
+     
+<div class="info-section">
+        <h2>Overview</h2>
+        <div class="info-bio">
+          Using the demo page and the above metrics, it's clear that a layered approach is likely needed to achieve the best results. 
+          The recommended combination is using SpaCy as a first layer to catch the low-hanging fruit at a low cost and then an additional step of the Sentence Transformer approach to model less obvious topics. The benefit of the Sentence Transformer model over the others is its lower cost and ability to adapt to multi-lingual inputs.
+          Both SpaCy and Sentence Transformers would require changes to their current forms on this site to allow for typo handling and multi-lingual input, but the implementation would look very similar. 
+        </div>
       </div>
 
     </div>
@@ -903,7 +895,7 @@ print(message.content[0].text)</textarea>
           3 Layers - each attempt to match lists corresponding to each keyword
           <ol>
             <li>Phrase Matcher - looks for exact matches of the keywords or phrases in the note</li>
-            <li>Token + "Fuzzy" Matcher - looks for matches of the individual words in the keywords, allowing for some flexibility with typos and word forms (e.g., "affordable" vs. "affordability")</li>
+            <li>Token Matcher - looks for matches of the individual words in the keywords, allowing for some flexibility with word forms (e.g., "affordable" vs. "affordability")</li>
             <li>Vector Similarity - looks at the overall meaning of the note and compares it to the meaning of the keywords using word vectors, allowing for more nuanced matches</li>
           </ol>
         </div>
