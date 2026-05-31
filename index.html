@@ -24,6 +24,26 @@
     .page-content li {
       margin-bottom: 6px;
     }
+
+    /* Evaluation Metrics: three boxes side-by-side */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+    .metrics-grid .info-section {
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 0;
+    }
+    /* Stack the boxes on narrow screens */
+    @media (max-width: 768px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -44,9 +64,8 @@
     <nav class="tab-nav" role="tablist">
       <button class="tab-btn active" data-tab="intro"   role="tab">Overview</button>
       <button class="tab-btn"        data-tab="demo"    role="tab">Project Demo</button>
-      <button class="tab-btn"        data-tab="details" role="tab">Project Details</button>
-      <button class="tab-btn"        data-tab="metrics" role="tab">Evaluation Metrics</button>
       <button class="tab-btn"        data-tab="cba"     role="tab">Cost Benefit Analysis</button>
+      <button class="tab-btn"        data-tab="details" role="tab">Project Details</button>
       <button class="tab-btn"        data-tab="contact" role="tab">Contact</button>
     </nav>
 
@@ -224,156 +243,141 @@ def run_claude(doc: str) -> str:
 # ── Model 3: spaCy (multi-layer matcher) ─────────────────────────────────────
 
 SPACY_KEYWORDS = {
-    "The Economy": [
-        "inflation", "prices", "affordability", "wages", "jobs",
-        "unemployment", "cost of living", "grocery", "gas prices", "childcare costs",
-        "recession", "economic growth", "small business", "supply chain", "poverty",
-        "financial strain", "minimum wage", "debt", "layoffs", "outsourcing",
-        "manufacturing", "consumer prices", "interest rates", "federal reserve", "stock market",
-        "retirement savings", "pension", "economic inequality", "purchasing power", "labor market",
-        "can't afford groceries", "paycheck to paycheck", "cost too high", "prices keep rising", "economy is broken",
-        "stagnation", "bankruptcy", "inequality", "scarcity", "instability",
-    ],
-    "Democracy": [
-        "voting", "election", "ballot", "voter rights", "voter suppression",
-        "gerrymandering", "election integrity", "campaign finance", "lobbying", "misinformation",
-        "voter ID", "mail-in voting", "polling", "civic engagement", "election security",
-        "disenfranchisement", "democracy", "autocracy", "representation", "redistricting",
-        "dark money", "PAC", "transparency", "accountability", "term limits",
-        "filibuster", "Senate", "House", "constitutional rights", "political corruption",
-        "government doesn't listen", "politicians are corrupt", "my vote doesn't count", "system is rigged", "losing faith in democracy",
-        "polarization", "gridlock", "oligarchy", "partisanship", "dysfunction",
-    ],
-    "Terrorism & National Security": [
-        "terrorism", "national security", "homeland security", "threat", "surveillance",
-        "intelligence", "military", "attack", "extremism", "radicalization",
-        "counterterrorism", "border security", "cyber attack", "ISIS", "safety",
-        "al-Qaeda", "domestic terrorism", "bioterrorism", "Pentagon", "defense spending",
-        "FBI", "CIA", "NSA", "patriot act", "war on terror",
-        "sleeper cell", "chemical weapons", "nuclear threat", "mass casualty", "security breach",
-        "not safe anymore", "government can't protect us", "threats are ignored", "security is failing", "country is vulnerable",
-        "instability", "infiltration", "propaganda", "espionage", "unpreparedness",
-    ],
-    "Immigration": [
-        "immigration", "immigrant", "deportation", "border", "asylum",
-        "undocumented", "refugee", "citizenship", "visa", "DACA",
-        "pathway", "migrant", "ICE", "detention", "naturalization",
-        "sanctuary city", "border wall", "illegal immigration", "legal immigration", "green card",
-        "work permit", "human trafficking", "family separation", "immigration court", "immigration reform",
-        "border patrol", "immigrant labor", "language barrier", "integration", "xenophobia",
-        "border is out of control", "immigration is ignored", "system is broken", "not enforcing the law", "overwhelmed communities",
-        "overcrowding", "displacement", "smuggling", "backlog", "exploitation",
-    ],
-    "Education": [
-        "school", "public school", "teacher", "curriculum", "tuition",
-        "student loans", "voucher", "school choice", "charter school", "literacy",
-        "higher education", "college", "classroom", "religion in schools", "standardized testing",
-        "funding", "school board", "special education", "early childhood", "preschool",
-        "teacher pay", "textbooks", "school safety", "homeschooling", "AP courses",
-        "college affordability", "trade school", "library", "academic freedom", "overcrowding",
-        "schools are failing", "can't afford college", "teachers are underpaid", "kids falling behind", "education system is broken",
-        "illiteracy", "dropout", "indoctrination", "defunding", "inequality",
-    ],
-    "Healthcare": [
-        "healthcare", "insurance", "prescription", "hospital", "medical costs",
-        "insulin", "mental health", "Medicare", "Medicaid", "coverage",
-        "premiums", "copay", "chronic illness", "drug prices", "universal healthcare",
-        "doctor", "treatment", "patient", "ACA", "preexisting condition",
-        "emergency room", "healthcare access", "rural healthcare", "nursing home", "disability",
-        "opioid", "therapy", "telehealth", "pharmaceutical", "out-of-pocket",
-        "can't afford medication", "insurance denied claim", "healthcare is unaffordable", "going bankrupt from medical bills", "system favors the rich",
-        "uninsured", "rationing", "misdiagnosis", "burnout", "understaffing",
-    ],
-    "Gun Policy": [
-        "gun", "firearm", "2nd amendment", "NRA", "background check",
-        "gun control", "gun rights", "concealed carry", "assault weapon", "shooting",
-        "gun violence", "open carry", "weapon", "ammunition", "gun ownership",
-        "rifle", "handgun", "red flag law", "mass shooting", "school shooting",
-        "gun safety", "magazine capacity", "silencer", "gun registry", "waiting period",
-        "gun buyback", "pistol", "shotgun", "self-defense", "gun shop",
-        "nothing is being done", "schools aren't safe", "tired of mass shootings", "politicians won't act", "rights are being threatened",
-        "bloodshed", "inaction", "proliferation", "loopholes", "tragedy",
-    ],
-    "Abortion": [
-        "abortion", "pro-choice", "pro-life", "reproductive rights", "Planned Parenthood",
-        "Roe v. Wade", "women's health", "clinic", "contraception", "pregnancy",
-        "fetus", "bodily autonomy", "abortion access", "ballot initiative", "family planning",
-        "abortion ban", "trimester", "late-term abortion", "abortion pill", "miscarriage",
-        "rape exception", "incest exception", "parental consent", "abortion clinic", "maternal health",
-        "birth control", "unintended pregnancy", "sex education", "adoption", "viability",
-        "government controlling my body", "rights are being stripped", "women's rights are under attack", "no access to care", "clinics are closing",
-        "criminalization", "coercion", "autonomy", "restriction", "inequality",
-    ],
-    "Taxes": [
-        "taxes", "tax cut", "tax increase", "IRS", "income tax",
-        "property tax", "sales tax", "tax break", "deduction", "tax reform",
-        "taxpayer", "corporate tax", "tax credit", "refund", "tax code",
-        "audit", "loophole", "estate tax", "capital gains", "tax evasion",
-        "flat tax", "progressive tax", "tariff", "tax shelter", "write-off",
-        "fiscal policy", "tax burden", "payroll tax", "wealth tax", "tax filing",
-        "rich don't pay taxes", "tax system is unfair", "corporations avoid taxes", "taxed too much", "where does my money go",
-        "overtaxed", "misappropriation", "inequality", "exemptions", "underfunding",
-    ],
-    "Crime": [
-        "crime", "safety", "police", "law enforcement", "incarceration",
-        "prison", "arrest", "violence", "theft", "homicide",
-        "drug crime", "recidivism", "criminal justice", "sentencing", "bail",
-        "neighborhood safety", "patrol", "victim", "gang", "drug trafficking",
-        "white collar crime", "fraud", "juvenile crime", "parole", "probation",
-        "police reform", "defund police", "overcrowding", "reentry", "rehabilitation",
-        "streets aren't safe", "crime is out of control", "criminals aren't prosecuted", "no consequences", "justice system is broken",
-        "lawlessness", "corruption", "impunity", "neglect", "underfunding",
-    ],
-    "Foreign Affairs": [
-        "foreign policy", "diplomacy", "ally", "NATO", "United Nations",
-        "sanctions", "war", "conflict", "Ukraine", "China",
-        "Israel", "trade agreement", "ambassador", "international relations", "aid",
-        "treaty", "geopolitics", "Russia", "Middle East", "Taiwan",
-        "human rights", "foreign aid", "peacekeeping", "embargo", "coup",
-        "regime", "nuclear deal", "Gaza", "refugee crisis", "military alliance",
-        "why are we sending money abroad", "focus on home first", "foreign wars are draining us", "no clear foreign policy", "allies don't respect us",
-        "isolationism", "entanglement", "overreach", "weakness", "instability",
-    ],
-    "Energy Policy": [
-        "energy", "solar", "wind power", "fossil fuels", "oil",
-        "natural gas", "renewable", "power grid", "electricity costs", "pipeline",
-        "carbon", "clean energy", "coal", "nuclear", "energy independence",
-        "utility bills", "sustainability", "composting", "fracking", "offshore drilling",
-        "energy storage", "battery", "EV", "electric vehicle", "carbon emissions",
-        "energy subsidy", "OPEC", "refinery", "greenhouse gas", "energy transition",
-        "utility bills too high", "gas prices are crushing us", "no plan for clean energy", "dependent on foreign oil", "grid keeps failing",
-        "blackouts", "dependency", "pollution", "inefficiency", "neglect",
-    ],
-    "Race Relations": [
-        "race", "racism", "equity", "diversity", "civil rights",
-        "discrimination", "systemic racism", "police brutality", "DEI", "minority",
-        "reparations", "racial justice", "hate crime", "inclusion", "implicit bias",
-        "equality", "affirmative action", "racial profiling", "segregation", "redlining",
-        "white supremacy", "NAACP", "Black Lives Matter", "racial wealth gap", "voting rights",
-        "environmental racism", "cultural competency", "intersectionality", "anti-racism", "racial disparity",
-        "racism is getting worse", "nothing has changed", "hate is on the rise", "not being heard", "system was built against us",
-        "injustice", "oppression", "tokenism", "erasure", "backlash",
-    ],
-    "LGBTQ+ Rights": [
-        "LGBTQ", "gay rights", "transgender", "same-sex marriage", "gender identity",
-        "pronouns", "pride", "discrimination", "conversion therapy", "queer",
-        "non-binary", "bathroom bill", "adoption rights", "equality act", "sexual orientation",
-        "inclusion", "drag", "gender affirming care", "trans youth", "hate crime",
-        "coming out", "lesbian", "bisexual", "gay marriage", "domestic partnership",
-        "LGBTQ employment", "military ban", "rainbow", "safe space", "gender expression",
-        "rights are being rolled back", "trans kids are under attack", "not safe to be out", "politicians targeting our community", "discrimination is getting worse",
-        "erasure", "criminalization", "invisibility", "hostility", "regression",
-    ],
-    "Housing": [
-        "housing", "rent", "landlord", "mortgage", "affordable housing",
-        "eviction", "homelessness", "property", "rent hike", "condo",
-        "homeowner", "zoning", "housing costs", "shelter", "tenant rights",
-        "down payment", "gentrification", "housing market", "housing shortage", "section 8",
-        "public housing", "rent control", "housing voucher", "foreclosure", "property taxes",
-        "housing discrimination", "overcrowding", "accessory dwelling", "mixed income housing", "first time homebuyer",
-        "can't afford to buy a home", "rent keeps going up", "being priced out", "landlords are gouging us", "nowhere affordable to live",
-        "displacement", "unaffordability", "speculation", "neglect", "instability",
-    ],
+   "The Economy": [
+       "inflation", "prices", "affordability", "wages", "jobs",
+       "unemployment", "cost of living", "grocery", "gas prices", "childcare costs",
+       "recession", "economic growth", "small business", "supply chain", "poverty",
+       "financial strain", "minimum wage", "debt", "layoffs", "outsourcing",
+       "manufacturing", "consumer prices", "interest rates", "federal reserve", "stock market",
+       "retirement savings", "pension", "economic inequality", "purchasing power", "labor market",
+       "cost too high", "stagnation", "bankruptcy"
+   ],
+   "Democracy": [
+       "voting", "election", "ballot", "voter rights", "voter suppression",
+       "gerrymandering", "election integrity", "campaign finance", "lobbying", "misinformation",
+       "voter ID", "mail-in voting", "polling", "civic engagement", "election security",
+       "disenfranchisement", "democracy", "autocracy", "representation", "redistricting",
+       "dark money", "PAC", "transparency", "accountability", "term limits",
+       "filibuster", "Senate", "House", "constitutional rights", "political corruption",
+       "polarization", "gridlock", "oligarchy", "partisanship"
+   ],
+   "Terrorism & National Security": [
+       "terrorism", "national security", "homeland security", "threat", "surveillance",
+       "intelligence", "military", "attack", "extremism", "radicalization",
+       "counterterrorism", "border security", "cyber attack", "ISIS", "safety",
+       "al-Qaeda", "domestic terrorism", "bioterrorism", "Pentagon", "defense spending",
+       "FBI", "CIA", "NSA", "patriot act", "war on terror",
+       "sleeper cell", "chemical weapons", "nuclear threat", "mass casualty", "security breach",
+       "not safe anymore", "infiltration", "propaganda", "espionage"
+   ],
+   "Immigration": [
+       "immigration", "immigrant", "deportation", "border", "asylum",
+       "undocumented", "refugee", "citizenship", "visa", "DACA",
+       "pathway", "migrant", "ICE", "detention", "naturalization",
+       "sanctuary city", "border wall", "illegal immigration", "legal immigration", "green card",
+       "work permit", "family separation", "border patrol", "immigrant labor", "xenophobia",
+       "overcrowding", "displacement", "smuggling"
+   ],
+   "Education": [
+       "school", "public school", "teacher", "curriculum", "tuition",
+       "student loans", "voucher", "school choice", "charter school", "literacy",
+       "higher education", "college", "classroom", "school board", "special education", "early childhood", "preschool",
+       "teacher pay", "textbooks", "school safety", "homeschooling", "AP courses",
+       "college affordability", "trade school", "library", "academic freedom", "overcrowding",
+       "illiteracy", "dropout", "indoctrination"
+   ],
+   "Healthcare": [
+       "healthcare", "insurance", "prescription", "hospital", "medical costs",
+       "insulin", "mental health", "Medicare", "Medicaid", "coverage",
+       "premiums", "copay", "chronic illness", "drug prices", "universal healthcare",
+       "doctor", "treatment", "patient", "ACA", "preexisting condition",
+       "emergency room", "healthcare access", "rural healthcare", "nursing home", "disability",
+       "opioid", "therapy", "telehealth", "pharmaceutical", "out-of-pocket",
+       "can't afford medication", "insurance denied claim", "healthcare is unaffordable", "medical bills",
+       "uninsured", "misdiagnosis"
+   ],
+   "Gun Policy": [
+       "gun", "firearm", "2nd amendment", "NRA", "background check",
+       "gun control", "gun rights", "concealed carry", "assault weapon", "shooting",
+       "gun violence", "open carry", "weapon", "ammunition", "gun ownership",
+       "rifle", "handgun", "red flag law", "mass shooting", "school shooting",
+       "gun safety", "magazine capacity", "silencer", "gun registry", "gun buyback", "pistol", "shotgun", "self-defense", "gun shop",
+       "bloodshed", "loopholes"
+   ],
+   "Abortion": [
+       "abortion", "pro-choice", "pro-life", "reproductive rights", "Planned Parenthood",
+       "Roe v. Wade", "women's health", "clinic", "contraception", "pregnancy",
+       "fetus", "bodily autonomy", "abortion access", "ballot initiative", "family planning",
+       "abortion ban", "trimester", "late-term abortion", "abortion pill", "miscarriage",
+       "rape exception", "incest exception", "parental consent", "abortion clinic", "maternal health",
+       "birth control", "unintended pregnancy", "sex education", "adoption", "viability",
+       "no access to care", "clinics are closing",
+       "criminalization", "autonomy", "restriction"
+   ],
+   "Taxes": [
+       "taxes", "tax cut", "tax increase", "IRS", "income tax",
+       "property tax", "sales tax", "tax break", "deduction", "tax reform",
+       "taxpayer", "corporate tax", "tax credit", "refund", "tax code",
+       "audit", "loophole", "estate tax", "capital gains", "tax evasion",
+       "flat tax", "progressive tax", "tariff", "tax shelter", "write-off",
+       "fiscal policy", "tax burden", "payroll tax", "wealth tax", "tax filing",
+       "overtaxed", "misappropriation", "exemptions"
+   ],
+   "Crime": [
+       "crime", "safety", "police", "law enforcement", "incarceration",
+       "prison", "arrest", "violence", "theft", "homicide",
+       "drug crime", "recidivism", "criminal justice", "sentencing", "bail",
+       "neighborhood safety", "patrol", "victim", "gang", "drug trafficking",
+       "white collar crime", "fraud", "juvenile crime", "parole", "probation",
+       "police reform", "defund police", "overcrowding", "reentry", "rehabilitation",
+       "justice system",
+       "lawlessness", "impunity"
+   ],
+   "Foreign Affairs": [
+       "foreign policy", "diplomacy", "ally", "NATO", "United Nations",
+       "sanctions", "war", "conflict", "Ukraine", "China",
+       "Israel", "trade agreement", "ambassador", "international relations", "aid",
+       "treaty", "geopolitics", "Russia", "Middle East", "Taiwan",
+       "human rights", "foreign aid", "peacekeeping", "embargo", "coup",
+       "regime", "nuclear deal", "Gaza", "refugee crisis", "military alliance",
+       "why are we sending money abroad", "focus on home first", "foreign wars",
+       "isolationism", "entanglement", "overreach", "weakness", "instability"
+   ],
+   "Energy Policy": [
+       "energy", "solar", "wind power", "fossil fuels", "oil",
+       "natural gas", "renewable", "power grid", "electricity costs", "pipeline",
+       "carbon", "clean energy", "coal", "nuclear", "energy independence",
+       "utility bills", "sustainability", "composting", "fracking", "offshore drilling",
+       "energy storage", "battery", "EV", "electric vehicle", "carbon emissions",
+       "energy subsidy", "OPEC", "refinery", "greenhouse gas", "energy transition",
+       "utility bills too high", "gas prices are crushing us",
+       "blackouts", "dependency", "pollution"
+   ],
+   "Race Relations": [
+       "race", "racism", "equity", "diversity", "civil rights",
+       "discrimination", "systemic racism", "police brutality", "DEI", "minority",
+       "reparations", "racial justice", "hate crime", "inclusion", "implicit bias",
+       "equality", "affirmative action", "racial profiling", "segregation", "redlining",
+       "white supremacy", "NAACP", "Black Lives Matter", "racial wealth gap", "voting rights",
+       "intersectionality", "anti-racism", "racial disparity",
+       "hate is on the rise", "oppression", "tokenism", "erasure", "backlash"
+   ],
+   "LGBTQ+ Rights": [
+       "LGBTQ", "gay rights", "transgender", "same-sex marriage", "gender identity",
+       "pronouns", "pride", "discrimination", "conversion therapy", "queer",
+       "non-binary", "bathroom bill", "adoption rights", "equality act", "sexual orientation",
+       "inclusion", "drag", "gender affirming care", "trans youth", "hate crime",
+       "coming out", "lesbian", "bisexual", "gay marriage", "domestic partnership",
+       "LGBTQ employment", "military ban", "rainbow", "safe space", "gender expression"
+   ],
+   "Housing": [
+       "housing", "rent", "landlord", "mortgage", "affordable housing",
+       "eviction", "homelessness", "property", "rent hike", "condo",
+       "homeowner", "zoning", "housing costs", "shelter", "tenant rights",
+       "down payment", "gentrification", "housing market", "housing shortage", "section 8",
+       "public housing", "rent control", "housing voucher", "foreclosure", "property taxes",
+       "accessory dwelling", "mixed income housing", "first time homebuyer"
+   ],
 }
 
 VECTOR_THRESHOLD = 0.55
@@ -560,7 +564,85 @@ else:
 
 
   <!-- ════════════════════════════════════════════════════
-       TAB 3 — PROJECT DETAILS
+       TAB 3 — COST BENEFIT ANALYSIS
+       ════════════════════════════════════════════════════ -->
+  <div id="tab-cba" class="tab-panel" role="tabpanel">
+    <div class="page-content">
+
+      <div class="projects-intro">
+        <h1>Cost Benefit Analysis</h1>
+      </div>
+
+      <div class="info-section">
+        <h2>Overview</h2>
+        <div class="info-bio">
+          <!-- TODO: Replace with your intro text. This first block sits above the image. -->
+          Add your introductory text here — for example, framing how the costs (set-up effort,
+          compute, ongoing maintenance, organizer buy-in) weigh against the benefits (time saved,
+          better follow-up, cleaner data) for each modeling approach.
+        </div>
+      </div>
+
+      <!-- TODO: Replace src with your chart/diagram. Drop the image file next to this HTML. -->
+      <img src="cost_benefit.jpg" alt="Cost benefit analysis chart" class="info-img" style="width: 60%; height: auto;" />
+
+      <div class="info-section">
+        <h2>Analysis</h2>
+        <div class="info-bio">
+          <!-- TODO: Replace with your follow-up text. This block sits below the image. -->
+          Add your closing analysis here — walk through what the figure above shows and what it
+          means for a team deciding which approach (or layered combination of approaches) to adopt.
+        </div>
+      </div>
+
+      <div class="projects-intro">
+        <h1>Evaluation Metrics</h1>
+      </div>
+
+      <div class="metrics-grid">
+
+      <div class="info-section">
+        <h2>Ease of Implementation</h2>
+        <div class="info-bio">This model must be easy to implement and edit as needs and issues change.</div>
+        <br><br>
+        <ul>
+          <li>Set-Up</li>
+          <li>Cost</li>
+          <li>Run time</li>
+          <li>Buy-in</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h2>Adaptability</h2>
+        <div class="info-bio">Organizer's field notes can vary wildly - this tool needs to be able to account for variety.</div>
+        <br><br>
+        <ul>
+          <li>Typos</li>
+          <li>Abbreviations</li>
+          <li>Slang</li>
+          <li>Multilingual Input</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h2>Smart Interpretation</h2>
+        <div class="info-bio">This model needs to be able to understand context, and avoid extraneous information.</div>
+        <br>
+        <ul>
+          <li>Implied Topics</li>
+          <li>Filter extraneous input</li>
+        </ul>
+      </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════
+       TAB 4 — PROJECT DETAILS
        ════════════════════════════════════════════════════ -->
   <div id="tab-details" class="tab-panel" role="tabpanel">
     <div class="page-content">
@@ -573,7 +655,7 @@ else:
 
         <div class="sub-section">
           Instead of developing an entirely new tool, research is compiled below so that existing field tools can implement a similar model into their systems. Each avenue explored has its own demo to try out the model's performance followed by some comparative analysis.
-          <br><br>
+
           <div class="projects-intro">
             <h2>Logistics</h2>
           </div>
@@ -868,8 +950,7 @@ KEYWORDS = {
        "financial strain", "minimum wage", "debt", "layoffs", "outsourcing",
        "manufacturing", "consumer prices", "interest rates", "federal reserve", "stock market",
        "retirement savings", "pension", "economic inequality", "purchasing power", "labor market",
-       "can't afford groceries", "paycheck to paycheck", "cost too high", "prices keep rising", "economy is broken",
-       "stagnation", "bankruptcy", "inequality", "scarcity", "instability",
+       "cost too high", "stagnation", "bankruptcy"
    ],
    "Democracy": [
        "voting", "election", "ballot", "voter rights", "voter suppression",
@@ -878,8 +959,7 @@ KEYWORDS = {
        "disenfranchisement", "democracy", "autocracy", "representation", "redistricting",
        "dark money", "PAC", "transparency", "accountability", "term limits",
        "filibuster", "Senate", "House", "constitutional rights", "political corruption",
-       "government doesn't listen", "politicians are corrupt", "my vote doesn't count", "system is rigged", "losing faith in democracy",
-       "polarization", "gridlock", "oligarchy", "partisanship", "dysfunction",
+       "polarization", "gridlock", "oligarchy", "partisanship"
    ],
    "Terrorism & National Security": [
        "terrorism", "national security", "homeland security", "threat", "surveillance",
@@ -888,28 +968,23 @@ KEYWORDS = {
        "al-Qaeda", "domestic terrorism", "bioterrorism", "Pentagon", "defense spending",
        "FBI", "CIA", "NSA", "patriot act", "war on terror",
        "sleeper cell", "chemical weapons", "nuclear threat", "mass casualty", "security breach",
-       "not safe anymore", "government can't protect us", "threats are ignored", "security is failing", "country is vulnerable",
-       "instability", "infiltration", "propaganda", "espionage", "unpreparedness",
+       "not safe anymore", "infiltration", "propaganda", "espionage"
    ],
    "Immigration": [
        "immigration", "immigrant", "deportation", "border", "asylum",
        "undocumented", "refugee", "citizenship", "visa", "DACA",
        "pathway", "migrant", "ICE", "detention", "naturalization",
        "sanctuary city", "border wall", "illegal immigration", "legal immigration", "green card",
-       "work permit", "human trafficking", "family separation", "immigration court", "immigration reform",
-       "border patrol", "immigrant labor", "language barrier", "integration", "xenophobia",
-       "border is out of control", "immigration is ignored", "system is broken", "not enforcing the law", "overwhelmed communities",
-       "overcrowding", "displacement", "smuggling", "backlog", "exploitation",
+       "work permit", "family separation", "border patrol", "immigrant labor", "xenophobia",
+       "overcrowding", "displacement", "smuggling"
    ],
    "Education": [
        "school", "public school", "teacher", "curriculum", "tuition",
        "student loans", "voucher", "school choice", "charter school", "literacy",
-       "higher education", "college", "classroom", "religion in schools", "standardized testing",
-       "funding", "school board", "special education", "early childhood", "preschool",
+       "higher education", "college", "classroom", "school board", "special education", "early childhood", "preschool",
        "teacher pay", "textbooks", "school safety", "homeschooling", "AP courses",
        "college affordability", "trade school", "library", "academic freedom", "overcrowding",
-       "schools are failing", "can't afford college", "teachers are underpaid", "kids falling behind", "education system is broken",
-       "illiteracy", "dropout", "indoctrination", "defunding", "inequality",
+       "illiteracy", "dropout", "indoctrination"
    ],
    "Healthcare": [
        "healthcare", "insurance", "prescription", "hospital", "medical costs",
@@ -918,18 +993,16 @@ KEYWORDS = {
        "doctor", "treatment", "patient", "ACA", "preexisting condition",
        "emergency room", "healthcare access", "rural healthcare", "nursing home", "disability",
        "opioid", "therapy", "telehealth", "pharmaceutical", "out-of-pocket",
-       "can't afford medication", "insurance denied claim", "healthcare is unaffordable", "going bankrupt from medical bills", "system favors the rich",
-       "uninsured", "rationing", "misdiagnosis", "burnout", "understaffing",
+       "can't afford medication", "insurance denied claim", "healthcare is unaffordable", "medical bills",
+       "uninsured", "misdiagnosis"
    ],
    "Gun Policy": [
        "gun", "firearm", "2nd amendment", "NRA", "background check",
        "gun control", "gun rights", "concealed carry", "assault weapon", "shooting",
        "gun violence", "open carry", "weapon", "ammunition", "gun ownership",
        "rifle", "handgun", "red flag law", "mass shooting", "school shooting",
-       "gun safety", "magazine capacity", "silencer", "gun registry", "waiting period",
-       "gun buyback", "pistol", "shotgun", "self-defense", "gun shop",
-       "nothing is being done", "schools aren't safe", "tired of mass shootings", "politicians won't act", "rights are being threatened",
-       "bloodshed", "inaction", "proliferation", "loopholes", "tragedy",
+       "gun safety", "magazine capacity", "silencer", "gun registry", "gun buyback", "pistol", "shotgun", "self-defense", "gun shop",
+       "bloodshed", "loopholes"
    ],
    "Abortion": [
        "abortion", "pro-choice", "pro-life", "reproductive rights", "Planned Parenthood",
@@ -938,8 +1011,8 @@ KEYWORDS = {
        "abortion ban", "trimester", "late-term abortion", "abortion pill", "miscarriage",
        "rape exception", "incest exception", "parental consent", "abortion clinic", "maternal health",
        "birth control", "unintended pregnancy", "sex education", "adoption", "viability",
-       "government controlling my body", "rights are being stripped", "women's rights are under attack", "no access to care", "clinics are closing",
-       "criminalization", "coercion", "autonomy", "restriction", "inequality",
+       "no access to care", "clinics are closing",
+       "criminalization", "autonomy", "restriction"
    ],
    "Taxes": [
        "taxes", "tax cut", "tax increase", "IRS", "income tax",
@@ -948,8 +1021,7 @@ KEYWORDS = {
        "audit", "loophole", "estate tax", "capital gains", "tax evasion",
        "flat tax", "progressive tax", "tariff", "tax shelter", "write-off",
        "fiscal policy", "tax burden", "payroll tax", "wealth tax", "tax filing",
-       "rich don't pay taxes", "tax system is unfair", "corporations avoid taxes", "taxed too much", "where does my money go",
-       "overtaxed", "misappropriation", "inequality", "exemptions", "underfunding",
+       "overtaxed", "misappropriation", "exemptions"
    ],
    "Crime": [
        "crime", "safety", "police", "law enforcement", "incarceration",
@@ -958,8 +1030,8 @@ KEYWORDS = {
        "neighborhood safety", "patrol", "victim", "gang", "drug trafficking",
        "white collar crime", "fraud", "juvenile crime", "parole", "probation",
        "police reform", "defund police", "overcrowding", "reentry", "rehabilitation",
-       "streets aren't safe", "crime is out of control", "criminals aren't prosecuted", "no consequences", "justice system is broken",
-       "lawlessness", "corruption", "impunity", "neglect", "underfunding",
+       "justice system",
+       "lawlessness", "impunity"
    ],
    "Foreign Affairs": [
        "foreign policy", "diplomacy", "ally", "NATO", "United Nations",
@@ -968,8 +1040,8 @@ KEYWORDS = {
        "treaty", "geopolitics", "Russia", "Middle East", "Taiwan",
        "human rights", "foreign aid", "peacekeeping", "embargo", "coup",
        "regime", "nuclear deal", "Gaza", "refugee crisis", "military alliance",
-       "why are we sending money abroad", "focus on home first", "foreign wars are draining us", "no clear foreign policy", "allies don't respect us",
-       "isolationism", "entanglement", "overreach", "weakness", "instability",
+       "why are we sending money abroad", "focus on home first", "foreign wars",
+       "isolationism", "entanglement", "overreach", "weakness", "instability"
    ],
    "Energy Policy": [
        "energy", "solar", "wind power", "fossil fuels", "oil",
@@ -978,8 +1050,8 @@ KEYWORDS = {
        "utility bills", "sustainability", "composting", "fracking", "offshore drilling",
        "energy storage", "battery", "EV", "electric vehicle", "carbon emissions",
        "energy subsidy", "OPEC", "refinery", "greenhouse gas", "energy transition",
-       "utility bills too high", "gas prices are crushing us", "no plan for clean energy", "dependent on foreign oil", "grid keeps failing",
-       "blackouts", "dependency", "pollution", "inefficiency", "neglect",
+       "utility bills too high", "gas prices are crushing us",
+       "blackouts", "dependency", "pollution"
    ],
    "Race Relations": [
        "race", "racism", "equity", "diversity", "civil rights",
@@ -987,9 +1059,8 @@ KEYWORDS = {
        "reparations", "racial justice", "hate crime", "inclusion", "implicit bias",
        "equality", "affirmative action", "racial profiling", "segregation", "redlining",
        "white supremacy", "NAACP", "Black Lives Matter", "racial wealth gap", "voting rights",
-       "environmental racism", "cultural competency", "intersectionality", "anti-racism", "racial disparity",
-       "racism is getting worse", "nothing has changed", "hate is on the rise", "not being heard", "system was built against us",
-       "injustice", "oppression", "tokenism", "erasure", "backlash",
+       "intersectionality", "anti-racism", "racial disparity",
+       "hate is on the rise", "oppression", "tokenism", "erasure", "backlash"
    ],
    "LGBTQ+ Rights": [
        "LGBTQ", "gay rights", "transgender", "same-sex marriage", "gender identity",
@@ -997,9 +1068,7 @@ KEYWORDS = {
        "non-binary", "bathroom bill", "adoption rights", "equality act", "sexual orientation",
        "inclusion", "drag", "gender affirming care", "trans youth", "hate crime",
        "coming out", "lesbian", "bisexual", "gay marriage", "domestic partnership",
-       "LGBTQ employment", "military ban", "rainbow", "safe space", "gender expression",
-       "rights are being rolled back", "trans kids are under attack", "not safe to be out", "politicians targeting our community", "discrimination is getting worse",
-       "erasure", "criminalization", "invisibility", "hostility", "regression",
+       "LGBTQ employment", "military ban", "rainbow", "safe space", "gender expression"
    ],
    "Housing": [
        "housing", "rent", "landlord", "mortgage", "affordable housing",
@@ -1007,9 +1076,7 @@ KEYWORDS = {
        "homeowner", "zoning", "housing costs", "shelter", "tenant rights",
        "down payment", "gentrification", "housing market", "housing shortage", "section 8",
        "public housing", "rent control", "housing voucher", "foreclosure", "property taxes",
-       "housing discrimination", "overcrowding", "accessory dwelling", "mixed income housing", "first time homebuyer",
-       "can't afford to buy a home", "rent keeps going up", "being priced out", "landlords are gouging us", "nowhere affordable to live",
-       "displacement", "unaffordability", "speculation", "neglect", "instability",
+       "accessory dwelling", "mixed income housing", "first time homebuyer"
    ],
 }
 
@@ -1412,91 +1479,7 @@ print(f"Keywords: {keywords}")
 
 
   <!-- ════════════════════════════════════════════════════
-       TAB 4 — EVALUATION METRICS
-       ════════════════════════════════════════════════════ -->
-  <div id="tab-metrics" class="tab-panel" role="tabpanel">
-    <div class="page-content">
-
-      <div class="projects-intro">
-        <h1>Evaluation Metrics</h1>
-      </div>
-
-      <div class="info-section">
-        <h2>Ease of Implementation</h2>
-        <div class="info-bio">This model must be easy to implement and edit as needs and issues change.</div>
-        <br><br>
-        <ul>
-          <li>Set-Up</li>
-          <li>Cost</li>
-          <li>Run time</li>
-          <li>Buy-in</li>
-        </ul>
-      </div>
-
-      <div class="info-section">
-        <h2>Adaptability</h2>
-        <div class="info-bio">Organizer's field notes can vary wildly - this tool needs to be able to account for variety.</div>
-        <br><br>
-        <ul>
-          <li>Typos</li>
-          <li>Abbreviations</li>
-          <li>Slang</li>
-          <li>Multilingual Input</li>
-        </ul>
-      </div>
-
-      <div class="info-section">
-        <h2>Smart Interpretation</h2>
-        <div class="info-bio">This model needs to be able to understand context, and avoid extraneous information.</div>
-        <br>
-        <ul>
-          <li>Implied Topics</li>
-          <li>Filter extraneous input</li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ════════════════════════════════════════════════════
-       TAB 5 — COST BENEFIT ANALYSIS
-       ════════════════════════════════════════════════════ -->
-  <div id="tab-cba" class="tab-panel" role="tabpanel">
-    <div class="page-content">
-
-      <div class="projects-intro">
-        <h1>Cost Benefit Analysis</h1>
-      </div>
-
-      <div class="info-section">
-        <h2>Overview</h2>
-        <div class="info-bio">
-          <!-- TODO: Replace with your intro text. This first block sits above the image. -->
-          Add your introductory text here — for example, framing how the costs (set-up effort,
-          compute, ongoing maintenance, organizer buy-in) weigh against the benefits (time saved,
-          better follow-up, cleaner data) for each modeling approach.
-        </div>
-      </div>
-
-      <!-- TODO: Replace src with your chart/diagram. Drop the image file next to this HTML. -->
-      <img src="cost_benefit.png" alt="Cost benefit analysis chart" class="info-img" style="width: 60%; height: auto;" />
-
-      <div class="info-section">
-        <h2>Analysis</h2>
-        <div class="info-bio">
-          <!-- TODO: Replace with your follow-up text. This block sits below the image. -->
-          Add your closing analysis here — walk through what the figure above shows and what it
-          means for a team deciding which approach (or layered combination of approaches) to adopt.
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ════════════════════════════════════════════════════
-       TAB 6 — CONTACT + ACKNOWLEDGEMENTS
+       TAB 5 — CONTACT + ACKNOWLEDGEMENTS
        ════════════════════════════════════════════════════ -->
   <div id="tab-contact" class="tab-panel" role="tabpanel">
     <div class="page-content">
