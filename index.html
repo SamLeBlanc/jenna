@@ -162,14 +162,6 @@ All Models Demo (optimized)
 Runs 5 models on a single input and compares their issue tag outputs.
 KeyBERT | Claude | SpaCy | Zero-Shot Classification | Sentence Transformers
 
-Key speedups vs. the original:
-  * Every model is loaded ONCE at startup instead of inside each call.
-  * The spaCy matchers + issue vectors are built ONCE (input-independent).
-  * Sentence-Transformer candidate embeddings are encoded ONCE.
-  * All five classifiers run concurrently, so the Claude network round-trip
-    overlaps with local inference instead of running after it.
-  * Optional loop: classify many notes without paying the load cost again.
-"""
 
 import os
 import warnings
