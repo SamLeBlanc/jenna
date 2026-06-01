@@ -150,5 +150,8 @@ def health():
 
 
 if __name__ == "__main__":
+    # Dev only — production uses gunicorn (see railway.toml):
+    # gunicorn --workers 1 --threads 8 --timeout 120 --bind 0.0.0.0:PORT server:app
+    # Single process + threads keeps all models in shared memory.
     port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)

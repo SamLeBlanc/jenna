@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "python server.py"
+startCommand = "gunicorn --workers 1 --threads 8 --timeout 120 --bind 0.0.0.0:$PORT server:app"
 restartPolicyType = "on_failure"
 
 [[services]]
