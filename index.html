@@ -353,7 +353,7 @@ print("Loading models (one-time)...", flush=True)
 kw_model = KeyBERT()
 claude_client = anthropic.Anthropic()
 nlp = spacy.load("en_core_web_lg")
-zero_shot = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+# zero_shot already preloaded by server
 sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Sentence-Transformer candidate embeddings never change → encode once.
@@ -1101,8 +1101,8 @@ KEYWORDS = {
 # ── Load model ────────────────────────────────────────────────────────────────
 
 
-print("Loading spaCy model (en_core_web_lg)...")
-nlp = spacy.load("en_core_web_lg")
+# nlp already preloaded by server
+print("Using preloaded spaCy model...")
 
 
 # ── Layer 1: PhraseMatcher ────────────────────────────────────────────────────
@@ -1310,12 +1310,9 @@ if note:
             <textarea class="field-note-input" placeholder="Paste or type an organizer field note here…"></textarea>
           </div>
           <div class="editor-wrap">
-            <textarea class="py-src"># import pandas as pd
-# from transformers import pipeline
-# import torch
-
-
-classifier = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')
+            <textarea class="py-src"># from transformers import pipeline
+# classifier = pipeline('zero-shot-classification', model='cross-encoder/nli-MiniLM2-L6-H768')
+classifier = zero_shot
 
 
 candidates = ["Economy",

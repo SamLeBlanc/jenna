@@ -61,6 +61,10 @@ print("Loading sentence transformer...")
 sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
 print("Sentence transformer ready.")
 
+print("Loading zero-shot classifier...")
+zero_shot = transformers_pipeline("zero-shot-classification", model="cross-encoder/nli-MiniLM2-L6-H768")
+print("Zero-shot classifier ready.")
+
 api_key = os.environ.get("ANTHROPIC_API_KEY", "")
 if not api_key:
     print("WARNING: ANTHROPIC_API_KEY not set — Claude calls will fail.")
@@ -99,6 +103,8 @@ EXEC_GLOBALS = {
     "SentenceTransformer": SentenceTransformer,
     "sentence_model":      sentence_model,
     "util":                st_util,
+    # Zero-shot classifier
+    "zero_shot":           zero_shot,
 }
 
 
