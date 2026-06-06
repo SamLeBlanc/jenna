@@ -108,7 +108,8 @@ async function runBlockByIndex(idx) {
       outText.textContent = data.error;
       outText.className   = 'output-text error';
     } else {
-      outText.textContent = data.output || '(no output)';
+      outText.textContent = data.output || 'Running';
+      if (!data.output) outText.style.color = 'var(--green)';
     }
   } catch (err) {
     timing.textContent  = (performance.now() - t0).toFixed(0) + ' ms';
