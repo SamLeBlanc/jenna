@@ -7,6 +7,7 @@ Listens on $PORT (default 8080)
 import os
 import io
 import sys
+import threading
 import warnings
 import logging
 import traceback
@@ -147,19 +148,26 @@ def run_code():
     # Suppress warnings inside exec'd code too
     patched = "import warnings; warnings.filterwarnings('ignore')\n" + patched
 
-    stdout_buf = io.StringIO()
-    stderr_buf = io.StringIO()
-    error      = None
+    # Thread-local stdout — prevents concurrent requests from mixing output
+    _local = threading.local()
+    _local.buf = io.StringIO()
 
-    with contextlib.redirect_stdout(stdout_buf), contextlib.redirect_stderr(stderr_buf):
+    class ThreadLocalStream:
+        def write(self, s):
+            _local.buf.write(s)
+        def flush(self):
+            pass
+
+    stream = ThreadLocalStream()
+    error = None
+
+    with contextlib.redirect_stdout(stream), contextlib.redirect_stderr(stream):
         try:
             exec(patched, exec_globals)
         except Exception:
             error = traceback.format_exc()
 
-    output = stdout_buf.getvalue()
-    if stderr_buf.getvalue():
-        output += stderr_buf.getvalue()
+    output = _local.buf.getvalue()
     if error:
         output += error
 
