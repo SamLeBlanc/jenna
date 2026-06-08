@@ -66,7 +66,7 @@ sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
 print("Sentence transformer ready.")
 
 print("Loading zero-shot classifier...")
-zero_shot = transformers_pipeline("zero-shot-classification", model="MoritzLaurer/deberta-v3-xsmall-zeroshot-v2")
+zero_shot = transformers_pipeline("zero-shot-classification", model="MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33")
 print("Zero-shot classifier ready.")
 
 # ── Warmup — run dummy inference so PyTorch kernels are compiled before first user request ──
