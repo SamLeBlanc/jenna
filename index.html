@@ -346,15 +346,12 @@ SPACY_KEYWORDS = {
 }
 
 # ── One-time model loading ────────────────────────────────────────────────────
-# Everything below this line is loaded/built exactly once, at import/startup.
+# All models are preloaded by the server — use them directly.
 
-print("Loading models (one-time)...", flush=True)
+print("Using preloaded models...", flush=True)
 
-kw_model = KeyBERT()
-claude_client = anthropic.Anthropic()
-nlp = spacy.load("en_core_web_lg")
-# zero_shot already preloaded by server
-sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+# kw_model, claude_client, nlp, zero_shot, sentence_model
+# are all already available in the server's exec namespace.
 
 # Sentence-Transformer candidate embeddings never change → encode once.
 ST_KEYWORD_EMB = sentence_model.encode(CANDIDATES, convert_to_tensor=True)
@@ -424,7 +421,7 @@ CLAUDE_SYSTEM = (
 
 def run_claude(doc: str) -> str:
     try:
-        message = claude_client.messages.create(
+        message = claude_client.messages.create(  # uses server's preloaded claude_client
             model="claude-sonnet-4-6",
             max_tokens=1024,
             system=CLAUDE_SYSTEM,
