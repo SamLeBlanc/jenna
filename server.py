@@ -62,7 +62,7 @@ sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
 print("Sentence transformer ready.")
 
 print("Loading zero-shot classifier...")
-zero_shot = transformers_pipeline("zero-shot-classification", model="cross-encoder/nli-MiniLM2-L6-H768")
+zero_shot = transformers_pipeline("zero-shot-classification", model="MoritzLaurer/deberta-v3-xsmall-zeroshot-v2")
 print("Zero-shot classifier ready.")
 
 api_key = os.environ.get("ANTHROPIC_API_KEY", "")
