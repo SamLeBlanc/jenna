@@ -157,387 +157,144 @@
         </div>
         <div class="editor-wrap">
           <textarea class="py-src">
-# All Models Demo (optimized)
-# Runs 5 models on a single input and compares their issue tag outputs.
-# KeyBERT | Claude | SpaCy | Zero-Shot Classification | Sentence Transformers
+# All Models Demo
+# Runs all 5 models on your field note and compares their issue tag outputs.
+# KeyBERT | Claude | SpaCy | Zero-Shot | Sentence Transformers
 
-import os
-import warnings
-import logging
+note = input("Enter a field note: ").strip()
+if not note:
+    print("No field note provided.")
+else:
+    candidates = ["Economy", "Democracy in the US", "Terrorism", "Immigration",
+                  "Education", "Healthcare", "Gun Policy", "Abortion", "Taxes",
+                  "Crime", "Foreign Affairs", "Energy Policy", "Race Relations",
+                  "LGBTQ+ rights", "Housing"]
 
-# Suppress noisy library output BEFORE importing the heavy libs.
-warnings.filterwarnings("ignore")
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-for _name in ("transformers", "sentence_transformers", "torch", "keybert", "spacy"):
-    logging.getLogger(_name).setLevel(logging.ERROR)
+    print("-" * 50)
 
-from concurrent.futures import ThreadPoolExecutor
-
-import numpy as np
-import spacy
-from spacy.matcher import Matcher, PhraseMatcher
-from keybert import KeyBERT
-from transformers import pipeline
-from sentence_transformers import SentenceTransformer, util
-import anthropic
-
-# ── Shared Config ─────────────────────────────────────────────────────────────
-
-CANDIDATES = [
-    "Economy",
-    "Democracy in the US",
-    "Terrorism",
-    "Immigration",
-    "Education",
-    "Healthcare",
-    "Gun Policy",
-    "Abortion",
-    "Taxes",
-    "Crime",
-    "Foreign Affairs",
-    "Energy Policy",
-    "Race Relations",
-    "LGBTQ+ rights",
-    "Housing",
-]
-
-VECTOR_THRESHOLD = 0.55
-SECOND_ISSUE_MIN_RATIO = 0.65
-SECOND_KEYWORD_THRESHOLD = 0.40
-
-SPACY_KEYWORDS = {
-    "The Economy": [
-        "inflation", "prices", "affordability", "wages", "jobs",
-        "unemployment", "cost of living", "grocery", "gas prices", "childcare costs",
-        "recession", "economic growth", "small business", "supply chain", "poverty",
-        "financial strain", "minimum wage", "debt", "layoffs", "outsourcing",
-        "manufacturing", "consumer prices", "interest rates", "federal reserve", "stock market",
-        "retirement savings", "pension", "economic inequality", "purchasing power", "labor market",
-        "cost too high", "stagnation", "bankruptcy",
-    ],
-    "Democracy": [
-        "voting", "election", "ballot", "voter rights", "voter suppression",
-        "gerrymandering", "election integrity", "campaign finance", "lobbying", "misinformation",
-        "voter ID", "mail-in voting", "polling", "civic engagement", "election security",
-        "disenfranchisement", "democracy", "autocracy", "representation", "redistricting",
-        "dark money", "PAC", "transparency", "accountability", "term limits",
-        "filibuster", "Senate", "House", "constitutional rights", "political corruption",
-        "polarization", "gridlock", "oligarchy", "partisanship",
-    ],
-    "Terrorism & National Security": [
-        "terrorism", "national security", "homeland security", "threat", "surveillance",
-        "intelligence", "military", "attack", "extremism", "radicalization",
-        "counterterrorism", "border security", "cyber attack", "ISIS", "safety",
-        "al-Qaeda", "domestic terrorism", "bioterrorism", "Pentagon", "defense spending",
-        "FBI", "CIA", "NSA", "patriot act", "war on terror",
-        "sleeper cell", "chemical weapons", "nuclear threat", "mass casualty", "security breach",
-        "not safe anymore", "infiltration", "propaganda", "espionage",
-    ],
-    "Immigration": [
-        "immigration", "immigrant", "deportation", "border", "asylum",
-        "undocumented", "refugee", "citizenship", "visa", "DACA",
-        "pathway", "migrant", "ICE", "detention", "naturalization",
-        "sanctuary city", "border wall", "illegal immigration", "legal immigration", "green card",
-        "work permit", "family separation", "border patrol", "immigrant labor", "xenophobia",
-        "overcrowding", "displacement", "smuggling",
-    ],
-    "Education": [
-        "school", "public school", "teacher", "curriculum", "tuition",
-        "student loans", "voucher", "school choice", "charter school", "literacy",
-        "higher education", "college", "classroom", "school board", "special education",
-        "early childhood", "preschool",
-        "teacher pay", "textbooks", "school safety", "homeschooling", "AP courses",
-        "college affordability", "trade school", "library", "academic freedom", "overcrowding",
-        "illiteracy", "dropout", "indoctrination",
-    ],
-    "Healthcare": [
-        "healthcare", "insurance", "prescription", "hospital", "medical costs",
-        "insulin", "mental health", "Medicare", "Medicaid", "coverage",
-        "premiums", "copay", "chronic illness", "drug prices", "universal healthcare",
-        "doctor", "treatment", "patient", "ACA", "preexisting condition",
-        "emergency room", "healthcare access", "rural healthcare", "nursing home", "disability",
-        "opioid", "therapy", "telehealth", "pharmaceutical", "out-of-pocket",
-        "can't afford medication", "insurance denied claim", "healthcare is unaffordable", "medical bills",
-        "uninsured", "misdiagnosis",
-    ],
-    "Gun Policy": [
-        "gun", "firearm", "2nd amendment", "NRA", "background check",
-        "gun control", "gun rights", "concealed carry", "assault weapon", "shooting",
-        "gun violence", "open carry", "weapon", "ammunition", "gun ownership",
-        "rifle", "handgun", "red flag law", "mass shooting", "school shooting",
-        "gun safety", "magazine capacity", "silencer", "gun registry", "gun buyback",
-        "pistol", "shotgun", "self-defense", "gun shop",
-        "bloodshed", "loopholes",
-    ],
-    "Abortion": [
-        "abortion", "pro-choice", "pro-life", "reproductive rights", "Planned Parenthood",
-        "Roe v. Wade", "women's health", "clinic", "contraception", "pregnancy",
-        "fetus", "bodily autonomy", "abortion access", "ballot initiative", "family planning",
-        "abortion ban", "trimester", "late-term abortion", "abortion pill", "miscarriage",
-        "rape exception", "incest exception", "parental consent", "abortion clinic", "maternal health",
-        "birth control", "unintended pregnancy", "sex education", "adoption", "viability",
-        "no access to care", "clinics are closing",
-        "criminalization", "autonomy", "restriction",
-    ],
-    "Taxes": [
-        "taxes", "tax cut", "tax increase", "IRS", "income tax",
-        "property tax", "sales tax", "tax break", "deduction", "tax reform",
-        "taxpayer", "corporate tax", "tax credit", "refund", "tax code",
-        "audit", "loophole", "estate tax", "capital gains", "tax evasion",
-        "flat tax", "progressive tax", "tariff", "tax shelter", "write-off",
-        "fiscal policy", "tax burden", "payroll tax", "wealth tax", "tax filing",
-        "overtaxed", "misappropriation", "exemptions",
-    ],
-    "Crime": [
-        "crime", "safety", "police", "law enforcement", "incarceration",
-        "prison", "arrest", "violence", "theft", "homicide",
-        "drug crime", "recidivism", "criminal justice", "sentencing", "bail",
-        "neighborhood safety", "patrol", "victim", "gang", "drug trafficking",
-        "white collar crime", "fraud", "juvenile crime", "parole", "probation",
-        "police reform", "defund police", "overcrowding", "reentry", "rehabilitation",
-        "justice system",
-        "lawlessness", "impunity",
-    ],
-    "Foreign Affairs": [
-        "foreign policy", "diplomacy", "ally", "NATO", "United Nations",
-        "sanctions", "war", "conflict", "Ukraine", "China",
-        "Israel", "trade agreement", "ambassador", "international relations", "aid",
-        "treaty", "geopolitics", "Russia", "Middle East", "Taiwan",
-        "human rights", "foreign aid", "peacekeeping", "embargo", "coup",
-        "regime", "nuclear deal", "Gaza", "refugee crisis", "military alliance",
-        "why are we sending money abroad", "focus on home first", "foreign wars",
-        "isolationism", "entanglement", "overreach", "weakness", "instability",
-    ],
-    "Energy Policy": [
-        "energy", "solar", "wind power", "fossil fuels", "oil",
-        "natural gas", "renewable", "power grid", "electricity costs", "pipeline",
-        "carbon", "clean energy", "coal", "nuclear", "energy independence",
-        "utility bills", "sustainability", "composting", "fracking", "offshore drilling",
-        "energy storage", "battery", "EV", "electric vehicle", "carbon emissions",
-        "energy subsidy", "OPEC", "refinery", "greenhouse gas", "energy transition",
-        "utility bills too high", "gas prices are crushing us",
-        "blackouts", "dependency", "pollution",
-    ],
-    "Race Relations": [
-        "race", "racism", "equity", "diversity", "civil rights",
-        "discrimination", "systemic racism", "police brutality", "DEI", "minority",
-        "reparations", "racial justice", "hate crime", "inclusion", "implicit bias",
-        "equality", "affirmative action", "racial profiling", "segregation", "redlining",
-        "white supremacy", "NAACP", "Black Lives Matter", "racial wealth gap", "voting rights",
-        "intersectionality", "anti-racism", "racial disparity",
-        "hate is on the rise", "oppression", "tokenism", "erasure", "backlash",
-    ],
-    "LGBTQ+ Rights": [
-        "LGBTQ", "gay rights", "transgender", "same-sex marriage", "gender identity",
-        "pronouns", "pride", "discrimination", "conversion therapy", "queer",
-        "non-binary", "bathroom bill", "adoption rights", "equality act", "sexual orientation",
-        "inclusion", "drag", "gender affirming care", "trans youth", "hate crime",
-        "coming out", "lesbian", "bisexual", "gay marriage", "domestic partnership",
-        "LGBTQ employment", "military ban", "rainbow", "safe space", "gender expression",
-    ],
-    "Housing": [
-        "housing", "rent", "landlord", "mortgage", "affordable housing",
-        "eviction", "homelessness", "property", "rent hike", "condo",
-        "homeowner", "zoning", "housing costs", "shelter", "tenant rights",
-        "down payment", "gentrification", "housing market", "housing shortage", "section 8",
-        "public housing", "rent control", "housing voucher", "foreclosure", "property taxes",
-        "accessory dwelling", "mixed income housing", "first time homebuyer",
-    ],
-}
-
-# ── One-time model loading ────────────────────────────────────────────────────
-# All models are preloaded by the server — use them directly.
-
-print("Using preloaded models...", flush=True)
-
-# kw_model, claude_client, nlp, zero_shot, sentence_model
-# are all already available in the server's exec namespace.
-
-# Sentence-Transformer candidate embeddings never change → encode once.
-ST_KEYWORD_EMB = sentence_model.encode(CANDIDATES, convert_to_tensor=True)
-
-
-def _build_spacy_index():
-    """Build matchers + averaged issue vectors a single time."""
-    phrase_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    token_matcher = Matcher(nlp.vocab)
-    issue_vectors = {}
-
-    for issue, terms in SPACY_KEYWORDS.items():
-        phrase_matcher.add(issue, [nlp.make_doc(t) for t in terms])
-
-        lemma_pats, pos_pats, lower_pats, vecs = [], [], [], []
-        for t in terms:
-            td = nlp(t)  # one pipeline call per term instead of three
-            if len(t.split()) == 1 and len(td):
-                tok = td[0]
-                lemma_pats.append([{"LEMMA": tok.lemma_}])
-                if tok.pos_ in ("NOUN", "VERB", "PROPN", "ADJ"):
-                    pos_pats.append([{"LEMMA": tok.lemma_, "POS": tok.pos_}])
-                lower_pats.append([{"LOWER": t.lower()}])
-            if td.has_vector:
-                vecs.append(td.vector)
-
-        if lemma_pats:
-            token_matcher.add(f"LEMMA_{issue}", lemma_pats)
-        if pos_pats:
-            token_matcher.add(f"POS_{issue}", pos_pats)
-        if lower_pats:
-            token_matcher.add(f"LOWER_{issue}", lower_pats)
-        if vecs:
-            issue_vectors[issue] = np.mean(vecs, axis=0)
-
-    return phrase_matcher, token_matcher, issue_vectors
-
-
-SPACY_PHRASE_MATCHER, SPACY_TOKEN_MATCHER, SPACY_ISSUE_VECTORS = _build_spacy_index()
-
-print("Models ready.\n", flush=True)
-
-
-# ── Model 1: KeyBERT ──────────────────────────────────────────────────────────
-
-def run_keybert(doc: str) -> str:
+    # ── KeyBERT ──────────────────────────────────────────────────────────────
     try:
-        keywords = kw_model.extract_keywords(doc, candidates=CANDIDATES)
-        if keywords:
-            return ", ".join(kw for kw, _ in keywords)
-        return "No match"
+        keywords = kw_model.extract_keywords(note, candidates=candidates)
+        kb_result = ", ".join(kw for kw, _ in keywords) if keywords else "No match"
     except Exception as e:
-        return f"Error: {e}"
+        kb_result = f"Error: {e}"
+    print(f"{'KeyBERT:':<22}{kb_result}")
 
-
-# ── Model 2: Claude API ───────────────────────────────────────────────────────
-
-CLAUDE_SYSTEM = (
-    "Using the following list of potential keyword output, output 1 keyword "
-    "(2 if both are very relevant) to the input organizer notes that summarize "
-    "what the main issue of the constituent is. Potential Keyword Bank: "
-    "['Economy', 'Democracy in the US', 'Terrorism', 'Immigration', 'Education', "
-    "'Healthcare', 'Gun Policy', 'Abortion', 'Taxes', 'Crime', 'Foreign Affairs', "
-    "'Energy Policy', 'Race Relations', 'LGBTQ+ rights', 'Housing']"
-)
-
-
-def run_claude(doc: str) -> str:
+    # ── Claude ───────────────────────────────────────────────────────────────
     try:
-        message = claude_client.messages.create(  # uses server's preloaded claude_client
+        system_info = ("Using the following list of potential keyword output, output 1 keyword "
+                       "(2 if both are very relevant) to the input organizer notes that summarize "
+                       "what the main issue of the constituent is. Potential Keyword Bank: "
+                       "['Economy', 'Democracy in the US', 'Terrorism', 'Immigration', 'Education', "
+                       "'Healthcare', 'Gun Policy', 'Abortion', 'Taxes', 'Crime', 'Foreign Affairs', "
+                       "'Energy Policy', 'Race Relations', 'LGBTQ+ rights', 'Housing']")
+        message = claude_client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1024,
-            system=CLAUDE_SYSTEM,
-            messages=[{"role": "user", "content": doc}],
+            system=system_info,
+            messages=[{"role": "user", "content": note}],
         )
-        return message.content[0].text.strip()
+        cl_result = message.content[0].text.strip()
     except Exception as e:
-        return f"Error: {e}"
+        cl_result = f"Error: {e}"
+    print(f"{'Claude:':<22}{cl_result}")
 
-
-# ── Model 3: spaCy (multi-layer matcher) ─────────────────────────────────────
-
-def _cosine_sim(doc, vec):
-    if not doc.has_vector:
-        return 0.0
-    denom = np.linalg.norm(doc.vector) * np.linalg.norm(vec)
-    return float(np.dot(doc.vector, vec) / denom) if denom else 0.0
-
-
-def run_spacy(note_text: str) -> str:
+    # ── spaCy ─────────────────────────────────────────────────────────────────
     try:
-        doc = nlp(note_text)
+        KEYWORDS = {
+           "The Economy": ["inflation","prices","affordability","wages","jobs","unemployment","cost of living","grocery","gas prices","childcare costs","recession","economic growth","small business","supply chain","poverty","financial strain","minimum wage","debt","layoffs","outsourcing","manufacturing","consumer prices","interest rates","federal reserve","stock market","retirement savings","pension","economic inequality","purchasing power","labor market","cost too high","stagnation","bankruptcy"],
+           "Democracy": ["voting","election","ballot","voter rights","voter suppression","gerrymandering","election integrity","campaign finance","lobbying","misinformation","voter ID","mail-in voting","polling","civic engagement","election security","disenfranchisement","democracy","autocracy","representation","redistricting","dark money","PAC","transparency","accountability","term limits","filibuster","Senate","House","constitutional rights","political corruption","polarization","gridlock","oligarchy","partisanship"],
+           "Terrorism & National Security": ["terrorism","national security","homeland security","threat","surveillance","intelligence","military","attack","extremism","radicalization","counterterrorism","border security","cyber attack","ISIS","safety","al-Qaeda","domestic terrorism","bioterrorism","Pentagon","defense spending","FBI","CIA","NSA","patriot act","war on terror","sleeper cell","chemical weapons","nuclear threat","mass casualty","security breach","not safe anymore","infiltration","propaganda","espionage"],
+           "Immigration": ["immigration","immigrant","deportation","border","asylum","undocumented","refugee","citizenship","visa","DACA","pathway","migrant","ICE","detention","naturalization","sanctuary city","border wall","illegal immigration","legal immigration","green card","work permit","family separation","border patrol","immigrant labor","xenophobia","overcrowding","displacement","smuggling"],
+           "Education": ["school","public school","teacher","curriculum","tuition","student loans","voucher","school choice","charter school","literacy","higher education","college","classroom","school board","special education","early childhood","preschool","teacher pay","textbooks","school safety","homeschooling","AP courses","college affordability","trade school","library","academic freedom","overcrowding","illiteracy","dropout","indoctrination"],
+           "Healthcare": ["healthcare","insurance","prescription","hospital","medical costs","insulin","mental health","Medicare","Medicaid","coverage","premiums","copay","chronic illness","drug prices","universal healthcare","doctor","treatment","patient","ACA","preexisting condition","emergency room","healthcare access","rural healthcare","nursing home","disability","opioid","therapy","telehealth","pharmaceutical","out-of-pocket","can't afford medication","insurance denied claim","healthcare is unaffordable","medical bills","uninsured","misdiagnosis"],
+           "Gun Policy": ["gun","firearm","2nd amendment","NRA","background check","gun control","gun rights","concealed carry","assault weapon","shooting","gun violence","open carry","weapon","ammunition","gun ownership","rifle","handgun","red flag law","mass shooting","school shooting","gun safety","magazine capacity","silencer","gun registry","gun buyback","pistol","shotgun","self-defense","gun shop","bloodshed","loopholes"],
+           "Abortion": ["abortion","pro-choice","pro-life","reproductive rights","Planned Parenthood","Roe v. Wade","women's health","clinic","contraception","pregnancy","fetus","bodily autonomy","abortion access","ballot initiative","family planning","abortion ban","trimester","late-term abortion","abortion pill","miscarriage","rape exception","incest exception","parental consent","abortion clinic","maternal health","birth control","unintended pregnancy","sex education","adoption","viability","no access to care","clinics are closing","criminalization","autonomy","restriction"],
+           "Taxes": ["taxes","tax cut","tax increase","IRS","income tax","property tax","sales tax","tax break","deduction","tax reform","taxpayer","corporate tax","tax credit","refund","tax code","audit","loophole","estate tax","capital gains","tax evasion","flat tax","progressive tax","tariff","tax shelter","write-off","fiscal policy","tax burden","payroll tax","wealth tax","tax filing","overtaxed","misappropriation","exemptions"],
+           "Crime": ["crime","safety","police","law enforcement","incarceration","prison","arrest","violence","theft","homicide","drug crime","recidivism","criminal justice","sentencing","bail","neighborhood safety","patrol","victim","gang","drug trafficking","white collar crime","fraud","juvenile crime","parole","probation","police reform","defund police","overcrowding","reentry","rehabilitation","justice system","lawlessness","impunity"],
+           "Foreign Affairs": ["foreign policy","diplomacy","ally","NATO","United Nations","sanctions","war","conflict","Ukraine","China","Israel","trade agreement","ambassador","international relations","aid","treaty","geopolitics","Russia","Middle East","Taiwan","human rights","foreign aid","peacekeeping","embargo","coup","regime","nuclear deal","Gaza","refugee crisis","military alliance","why are we sending money abroad","focus on home first","foreign wars","isolationism","entanglement","overreach","weakness","instability"],
+           "Energy Policy": ["energy","solar","wind power","fossil fuels","oil","natural gas","renewable","power grid","electricity costs","pipeline","carbon","clean energy","coal","nuclear","energy independence","utility bills","sustainability","composting","fracking","offshore drilling","energy storage","battery","EV","electric vehicle","carbon emissions","energy subsidy","OPEC","refinery","greenhouse gas","energy transition","utility bills too high","gas prices are crushing us","blackouts","dependency","pollution"],
+           "Race Relations": ["race","racism","equity","diversity","civil rights","discrimination","systemic racism","police brutality","DEI","minority","reparations","racial justice","hate crime","inclusion","implicit bias","equality","affirmative action","racial profiling","segregation","redlining","white supremacy","NAACP","Black Lives Matter","racial wealth gap","voting rights","intersectionality","anti-racism","racial disparity","hate is on the rise","oppression","tokenism","erasure","backlash"],
+           "LGBTQ+ Rights": ["LGBTQ","gay rights","transgender","same-sex marriage","gender identity","pronouns","pride","discrimination","conversion therapy","queer","non-binary","bathroom bill","adoption rights","equality act","sexual orientation","inclusion","drag","gender affirming care","trans youth","hate crime","coming out","lesbian","bisexual","gay marriage","domestic partnership","LGBTQ employment","military ban","rainbow","safe space","gender expression"],
+           "Housing": ["housing","rent","landlord","mortgage","affordable housing","eviction","homelessness","property","rent hike","condo","homeowner","zoning","housing costs","shelter","tenant rights","down payment","gentrification","housing market","housing shortage","section 8","public housing","rent control","housing voucher","foreclosure","property taxes","accessory dwelling","mixed income housing","first time homebuyer"],
+        }
+        VECTOR_THRESHOLD = 0.55
+        SECOND_ISSUE_MIN_RATIO = 0.5
+        phrase_matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
+        token_matcher = Matcher(nlp.vocab)
+        issue_vectors = {}
+        for issue, terms in KEYWORDS.items():
+            phrase_matcher.add(issue, [nlp.make_doc(t) for t in terms])
+            lemma_pats, pos_pats, lower_pats = [], [], []
+            vecs = []
+            for t in terms:
+                td = nlp(t)
+                if len(t.split()) == 1 and len(td):
+                    tok = td[0]
+                    lemma_pats.append([{"LEMMA": tok.lemma_}])
+                    if tok.pos_ in ("NOUN","VERB","PROPN","ADJ"):
+                        pos_pats.append([{"LEMMA": tok.lemma_, "POS": tok.pos_}])
+                    lower_pats.append([{"LOWER": t.lower()}])
+                if td.has_vector:
+                    vecs.append(td.vector)
+            if lemma_pats: token_matcher.add(f"LEMMA_{issue}", lemma_pats)
+            if pos_pats:   token_matcher.add(f"POS_{issue}", pos_pats)
+            if lower_pats: token_matcher.add(f"LOWER_{issue}", lower_pats)
+            if vecs:       issue_vectors[issue] = np.mean(vecs, axis=0)
+        doc = nlp(note)
         hit_counts = {}
-
-        for match_id, _s, _e in SPACY_PHRASE_MATCHER(doc):
+        for match_id, _s, _e in phrase_matcher(doc):
             label = nlp.vocab.strings[match_id]
             hit_counts[label] = hit_counts.get(label, 0) + 1
-
-        for match_id, _s, _e in SPACY_TOKEN_MATCHER(doc):
+        for match_id, _s, _e in token_matcher(doc):
             raw = nlp.vocab.strings[match_id]
-            for prefix in ("LEMMA_", "POS_", "LOWER_"):
+            for prefix in ("LEMMA_","POS_","LOWER_"):
                 if raw.startswith(prefix):
                     label = raw[len(prefix):]
                     hit_counts[label] = hit_counts.get(label, 0) + 1
                     break
-
         if not hit_counts:
-            for issue, vec in SPACY_ISSUE_VECTORS.items():
-                score = _cosine_sim(doc, vec)
+            for issue, vec in issue_vectors.items():
+                denom = np.linalg.norm(doc.vector) * np.linalg.norm(vec)
+                score = float(np.dot(doc.vector, vec) / denom) if denom else 0.0
                 if score >= VECTOR_THRESHOLD:
                     hit_counts[issue] = round(score * 2)
-
         if not hit_counts:
-            return "Unclassified"
-
-        ranked = sorted(hit_counts.items(), key=lambda x: x[1], reverse=True)
-        top_issue, top_count = ranked[0]
-        result = [top_issue]
-        if len(ranked) > 1:
-            second_issue, second_count = ranked[1]
-            if second_count >= top_count * SECOND_ISSUE_MIN_RATIO:
-                result.append(second_issue)
-        return ", ".join(result)
+            sp_result = "Unclassified"
+        else:
+            ranked = sorted(hit_counts.items(), key=lambda x: x[1], reverse=True)
+            top_issue, top_count = ranked[0]
+            result = [top_issue]
+            if len(ranked) > 1 and ranked[1][1] >= top_count * SECOND_ISSUE_MIN_RATIO:
+                result.append(ranked[1][0])
+            sp_result = ", ".join(result)
     except Exception as e:
-        return f"Error: {e}"
+        sp_result = f"Error: {e}"
+    print(f"{'SpaCy:':<22}{sp_result}")
 
-
-# ── Model 4: Zero-Shot Classification (facebook/bart-large-mnli) ──────────────
-
-def run_zero_shot(doc: str) -> str:
+    # ── Zero-Shot ─────────────────────────────────────────────────────────────
     try:
-        result = zero_shot(doc, CANDIDATES)
-        return result["labels"][0]
+        zs_result = zero_shot(note, candidates)["labels"][0]
     except Exception as e:
-        return f"Error: {e}"
+        zs_result = f"Error: {e}"
+    print(f"{'Zero-Shot:':<22}{zs_result}")
 
-
-# ── Model 5: Sentence Transformers ───────────────────────────────────────────
-
-def run_sentence_transformer(doc: str) -> str:
+    # ── Sentence Transformers ─────────────────────────────────────────────────
     try:
-        note_embedding = sentence_model.encode(doc, convert_to_tensor=True)
-        scores = util.cos_sim(note_embedding, ST_KEYWORD_EMB)[0]
-        top = scores.topk(2)
-        top_indices = top.indices.tolist()
-        top_scores = top.values.tolist()
-        primary = CANDIDATES[top_indices[0]]
-        secondary = CANDIDATES[top_indices[1]] if top_scores[1] >= SECOND_KEYWORD_THRESHOLD else None
-        result = [primary] + ([secondary] if secondary else [])
-        return ", ".join(result)
+        SECOND_KEYWORD_THRESHOLD = 0.40
+        keyword_embeddings = sentence_model.encode(candidates, convert_to_tensor=True)
+        note_embedding = sentence_model.encode(note, convert_to_tensor=True)
+        scores = util.cos_sim(note_embedding, keyword_embeddings)[0]
+        top_indices = scores.topk(2).indices.tolist()
+        top_scores  = scores.topk(2).values.tolist()
+        primary   = candidates[top_indices[0]]
+        secondary = candidates[top_indices[1]] if top_scores[1] >= SECOND_KEYWORD_THRESHOLD else None
+        st_result = ", ".join([primary] + ([secondary] if secondary else []))
     except Exception as e:
-        return f"Error: {e}"
+        st_result = f"Error: {e}"
+    print(f"{'Sentence Transformer:':<22}{st_result}")
 
-
-# ── Orchestration ─────────────────────────────────────────────────────────────
-
-CLASSIFIERS = {
-    "KeyBERT":              run_keybert,
-    "Claude":               run_claude,
-    "SpaCy":                run_spacy,
-    "Zero-Shot (BART)":     run_zero_shot,
-    "Sentence Transformer": run_sentence_transformer,
-}
-
-
-def classify(note: str) -> dict:
-    """Run all classifiers concurrently; the Claude round-trip overlaps the rest."""
-    with ThreadPoolExecutor(max_workers=len(CLASSIFIERS)) as ex:
-        futures = {name: ex.submit(fn, note) for name, fn in CLASSIFIERS.items()}
-        return {name: f.result() for name, f in futures.items()}
-
-
-def main():
-    while True:
-        note = input("Enter a field note (blank to quit): ").strip()
-        if not note:
-            break
-
-        print("\nRunning all classifiers...\n" + "-" * 50)
-        results = classify(note)
-        for name, value in results.items():
-            print(f"{name + ':':<22}{value}")
-        print("-" * 50 + "\n")
-
-
-main()</textarea>
+    print("-" * 50)</textarea>
           <div class="run-hint">Ctrl+Enter to run</div>
         </div>
         <div class="output-area hidden">
