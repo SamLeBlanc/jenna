@@ -65,6 +65,20 @@ print("Loading zero-shot classifier...")
 zero_shot = transformers_pipeline("zero-shot-classification", model="MoritzLaurer/deberta-v3-xsmall-zeroshot-v2")
 print("Zero-shot classifier ready.")
 
+# ── Warmup — run dummy inference so PyTorch kernels are compiled before first user request ──
+
+print("Warming up models...")
+try:
+    _dummy = "Warmup sentence for model initialization."
+    kw_model.extract_keywords(_dummy, top_n=1)
+    nlp(_dummy)
+    sentence_model.encode(_dummy)
+    zero_shot(_dummy, candidate_labels=["warmup"])
+    print("Warmup complete.")
+except Exception as e:
+    print(f"Warmup warning (non-fatal): {e}")
+
+
 api_key = os.environ.get("ANTHROPIC_API_KEY", "")
 if not api_key:
     print("WARNING: ANTHROPIC_API_KEY not set — Claude calls will fail.")

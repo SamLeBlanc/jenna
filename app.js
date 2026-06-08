@@ -90,8 +90,9 @@ async function runBlockByIndex(idx) {
   btn.disabled        = true;
   btn.textContent     = '⏳ Running';
   output.classList.remove('hidden');
-  outText.textContent = '';
+  outText.textContent = 'Running...';
   outText.className   = 'output-text';
+  outText.style.color = 'var(--green)';
   if (outImgs) outImgs.innerHTML = '';
 
   const t0 = performance.now();
@@ -107,9 +108,10 @@ async function runBlockByIndex(idx) {
     if (data.error) {
       outText.textContent = data.error;
       outText.className   = 'output-text error';
+      outText.style.color = '';
     } else {
-      outText.textContent = data.output || 'Running';
-      if (!data.output) outText.style.color = 'var(--green)';
+      outText.textContent = data.output || '';
+      outText.style.color = '';
     }
   } catch (err) {
     timing.textContent  = (performance.now() - t0).toFixed(0) + ' ms';
